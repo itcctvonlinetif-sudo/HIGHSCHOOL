@@ -7,7 +7,6 @@ id = "artifacts/api-server"
 id = "artifacts/mockup-sandbox"
 
 [deployment]
-router = "application"
 deploymentTarget = "autoscale"
 
 [deployment.postBuild]
@@ -15,7 +14,7 @@ args = ["pnpm", "store", "prune"]
 env = { "CI" = "true" }
 
 [workflows]
-runButton = "Project"
+runButton = "Masjid Istiqlal Website"
 
 [[workflows.workflow]]
 name = "Project"
@@ -48,8 +47,8 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "PORT=3000 BASE_PATH=/ pnpm --filter @workspace/masjid-istiqlal run dev"
-waitForPort = 3000
+args = "PORT=5000 BASE_PATH=/ pnpm --filter @workspace/masjid-istiqlal run dev"
+waitForPort = 5000
 
 [workflows.workflow.metadata]
 outputType = "webview"
