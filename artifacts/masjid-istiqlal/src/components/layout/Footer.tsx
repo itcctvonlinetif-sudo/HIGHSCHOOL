@@ -6,7 +6,14 @@ export function Footer() {
   const { data: settings } = useGetSettings();
 
   return (
-    <footer className="bg-primary text-primary-foreground pt-16 pb-8 border-t-[6px] border-secondary">
+    <footer
+      className="pt-16 pb-8 border-t-[6px]"
+      style={{
+        backgroundColor: "hsl(var(--footer-bg))",
+        color: "hsl(var(--footer-text))",
+        borderColor: "hsl(var(--secondary))",
+      }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-8">
           

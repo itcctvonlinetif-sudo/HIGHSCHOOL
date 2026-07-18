@@ -30,6 +30,8 @@ import { AdminJadwal } from "@/pages/admin/Jadwal";
 import { AdminLayanan } from "@/pages/admin/Layanan";
 import { AdminUbahPassword } from "@/pages/admin/UbahPassword";
 import { AdminBeranda } from "@/pages/admin/Beranda";
+import { AdminTampilan } from "@/pages/admin/Tampilan";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -55,6 +57,7 @@ const withPublic = (Component: React.ComponentType) => () => (
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
           <Switch>
@@ -71,6 +74,7 @@ function App() {
             <Route path="/admin/layanan" component={withAdmin(AdminLayanan)} />
             <Route path="/admin/beranda" component={withAdmin(AdminBeranda)} />
             <Route path="/admin/settings" component={withAdmin(AdminSettings)} />
+            <Route path="/admin/tampilan" component={withAdmin(AdminTampilan)} />
             <Route path="/admin/jadwal" component={withAdmin(AdminJadwal)} />
             <Route path="/admin/ubah-password" component={withAdmin(AdminUbahPassword)} />
 
@@ -93,6 +97,7 @@ function App() {
         </WouterRouter>
         <Toaster />
       </TooltipProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

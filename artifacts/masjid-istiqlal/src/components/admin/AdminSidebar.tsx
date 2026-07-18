@@ -2,7 +2,7 @@ import { Link, useLocation } from "wouter";
 import { 
   LayoutDashboard, Menu, FileText, Newspaper, 
   Calendar, Image as ImageIcon, Video, Settings, 
-  Clock, LogOut, LayoutGrid, KeyRound, LayoutTemplate
+  Clock, LogOut, LayoutGrid, KeyRound, LayoutTemplate, Palette
 } from "lucide-react";
 import { removeAuthToken } from "@/lib/auth";
 
@@ -18,6 +18,7 @@ const adminLinks = [
   { href: "/admin/cctv", label: "Live CCTV", icon: Video },
   { href: "/admin/jadwal", label: "Jadwal Shalat", icon: Clock },
   { href: "/admin/settings", label: "Pengaturan Situs", icon: Settings },
+  { href: "/admin/tampilan", label: "Pengaturan Tampilan", icon: Palette },
   { href: "/admin/ubah-password", label: "Ubah Password", icon: KeyRound },
 ];
 

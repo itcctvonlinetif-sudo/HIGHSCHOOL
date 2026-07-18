@@ -91,6 +91,10 @@
   --sidebar-accent-foreground: 46 65% 95%;
   --sidebar-border: 152 77% 22%;
   --sidebar-ring: 46 65% 52%;
+
+  /* Footer overrideable variables — default matches primary theme */
+  --footer-bg: var(--primary);
+  --footer-text: var(--primary-foreground);
 }
 
 @layer base {
