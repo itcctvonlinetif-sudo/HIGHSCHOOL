@@ -721,9 +721,11 @@ export function Home() {
       </section>
 
       {/* Prayer Times */}
-      <section className="relative z-30 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 mb-16">
-        <PrayerTimesWidget />
-      </section>
+      {(settings as any)?.showPrayerTimes !== "false" && (
+        <section className="relative z-30 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 mb-16">
+          <PrayerTimesWidget />
+        </section>
+      )}
 
       {/* Layanan Section */}
       {activeLayanan.length > 0 && (

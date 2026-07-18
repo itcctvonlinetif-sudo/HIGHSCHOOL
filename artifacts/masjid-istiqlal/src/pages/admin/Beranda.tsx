@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 import { MediaUploadInput } from "@/components/MediaUploadInput";
+import { useGetSettings, useUpdateSettings } from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Plus, Edit2, Trash2, Eye, EyeOff, ChevronUp, ChevronDown, X,
   Newspaper, Calendar, BookOpen, Users, MapPin, Heart, Star,
@@ -72,6 +74,22 @@ function getYtId(url: string): string | null {
 
 export function AdminBeranda() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const { data: settings } = useGetSettings();
+  const updateSettings = useUpdateSettings({
+    mutation: {
+      onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/settings"] }),
+    },
+  });
+
+  const showPrayerTimes = (settings as any)?.showPrayerTimes !== "false";
+
+  function togglePrayerTimes() {
+    const next = !showPrayerTimes;
+    updateSettings.mutate({ data: { showPrayerTimes: next ? "true" : "false" } as any });
+    toast({ title: next ? "Widget waktu sholat ditampilkan" : "Widget waktu sholat disembunyikan" });
+  }
+
   const [sections, setSections] = useState<HomepageSection[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -189,6 +207,27 @@ export function AdminBeranda() {
         <button onClick={openAdd} className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">
           <Plus size={18} /> Tambah Seksi Baru
         </button>
+      </div>
+
+      {/* Prayer Times Widget Toggle */}
+      <div>
+        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Widget Beranda</h2>
+        <div className={`bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4 ${!showPrayerTimes ? "opacity-60" : ""}`}>
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-emerald-100 text-emerald-600">
+            <Clock size={18} />
+          </div>
+          <div className="flex-1">
+            <p className="font-medium text-gray-800">Waktu Sholat</p>
+            <p className="text-xs text-gray-400">Widget jadwal sholat dan hitung mundur di bagian atas beranda</p>
+          </div>
+          <button
+            onClick={togglePrayerTimes}
+            className={`p-1.5 rounded-lg transition-colors ${showPrayerTimes ? "text-green-600 hover:bg-green-50" : "text-gray-400 hover:bg-gray-50"}`}
+            title={showPrayerTimes ? "Sembunyikan" : "Tampilkan"}
+          >
+            {showPrayerTimes ? <Eye size={18} /> : <EyeOff size={18} />}
+          </button>
+        </div>
       </div>
 
       {/* Auto sections */}
