@@ -67,7 +67,7 @@ export function CCTV() {
   };
 
   const pageTitle = accessSettings?.cctvPageTitle || "Live CCTV";
-  const pageDesc = accessSettings?.cctvPageDescription || "Pantauan langsung area Masjid Istiqlal";
+  const pageDesc = accessSettings?.cctvPageDescription || "Pantauan langsung area musholla";
 
   if (isLoading || accessSettings === null) {
     return (

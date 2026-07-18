@@ -230,7 +230,7 @@ export function AdminTampilan() {
 
         <div>
           <label className="block text-sm font-semibold mb-1">Font Judul (Heading)</label>
-          <p className="text-xs text-gray-400 mb-2">Digunakan untuk judul bagian, nama masjid, dan heading utama</p>
+          <p className="text-xs text-gray-400 mb-2">Digunakan untuk judul bagian, nama musholla, dan heading utama</p>
           <select
             value={form.themeHeadingFont}
             onChange={(e) => setForm((f) => ({ ...f, themeHeadingFont: e.target.value }))}

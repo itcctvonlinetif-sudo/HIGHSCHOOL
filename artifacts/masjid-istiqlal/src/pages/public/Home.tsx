@@ -714,7 +714,7 @@ export function Home() {
           </p>
           <div className="pt-8">
             <Link href="/profil" className="px-8 py-4 bg-secondary text-primary font-bold rounded-full hover:bg-white transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 inline-block">
-              Jelajahi Profil Masjid
+              Jelajahi Profil
             </Link>
           </div>
         </div>

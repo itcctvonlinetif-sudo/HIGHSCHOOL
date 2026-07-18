@@ -216,7 +216,7 @@ router.get("/admin/cctv-access", async (req, res) => {
     const hash = await getSetting("cctvAccessPasswordHash");
     res.json({
       cctvPageTitle: title ?? "Live CCTV",
-      cctvPageDescription: description ?? "Pantauan langsung area Masjid Istiqlal",
+      cctvPageDescription: description ?? "Pantauan langsung area musholla",
       hasPassword: !!hash,
     });
   } catch (err) {

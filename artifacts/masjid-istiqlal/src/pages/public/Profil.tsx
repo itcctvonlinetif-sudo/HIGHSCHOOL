@@ -34,7 +34,7 @@ export function Profil() {
             <img src={`${import.meta.env.BASE_URL}images/about-img.png`} alt="About" className="w-full h-[400px] object-cover rounded-3xl shadow-2xl mb-12" />
             <h2 className="font-display text-3xl font-bold text-primary mb-6">Sejarah Singkat</h2>
             <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-              Musholla Nurul Iman (arti harfiah: Masjid Kemerdekaan) adalah masjid nasional negara Republik Indonesia yang terletak di bekas Taman Wilhelmina, di Timur Laut Lapangan Medan Merdeka yang di tengahnya berdiri Monumen Nasional (Monas), di pusat ibukota Jakarta. Masjid ini merupakan salah satu dari 10 masjid terbesar kapasitasnya di dunia yang dapat menampung lebih dari 200.000 jamaah.
+              Musholla Nurul Iman adalah pusat peribadatan nasional negara Republik Indonesia yang terletak di bekas Taman Wilhelmina, di Timur Laut Lapangan Medan Merdeka yang di tengahnya berdiri Monumen Nasional (Monas), di pusat ibukota Jakarta. Musholla ini merupakan salah satu dari 10 tempat ibadah terbesar kapasitasnya di dunia yang dapat menampung lebih dari 200.000 jamaah.
             </p>
           </div>
         )}

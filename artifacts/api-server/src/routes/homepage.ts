@@ -5,8 +5,8 @@ import { eq, asc } from "drizzle-orm";
 const router = Router();
 
 const DEFAULT_SECTIONS = [
-  { type: "news", title: "Kabar Terbaru", subtitle: "Informasi terkini seputar kegiatan dan perkembangan masjid.", isVisible: true, order: 1, config: JSON.stringify({ count: 3, bgColor: "muted" }) },
-  { type: "events", title: "Agenda Kegiatan", subtitle: "Jadwal kegiatan dan program masjid yang akan datang.", isVisible: true, order: 2, config: JSON.stringify({ count: 3 }) },
+  { type: "news", title: "Kabar Terbaru", subtitle: "Informasi terkini seputar kegiatan dan perkembangan musholla.", isVisible: true, order: 1, config: JSON.stringify({ count: 3, bgColor: "muted" }) },
+  { type: "events", title: "Agenda Kegiatan", subtitle: "Jadwal kegiatan dan program musholla yang akan datang.", isVisible: true, order: 2, config: JSON.stringify({ count: 3 }) },
 ];
 
 async function ensureDefaults() {

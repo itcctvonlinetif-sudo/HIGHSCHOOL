@@ -138,7 +138,7 @@ export function AdminLayanan() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-display font-bold text-primary">Layanan Masjid</h1>
+          <h1 className="text-3xl font-display font-bold text-primary">Layanan</h1>
           <p className="text-muted-foreground mt-1">Kelola kartu layanan dan popup konten di halaman beranda</p>
         </div>
         <Button onClick={openAdd} className="bg-primary hover:bg-primary/90 gap-2">

@@ -6,8 +6,8 @@ const router = Router();
 
 const DEFAULT_SETTINGS = {
   siteName: "Musholla Nurul Iman",
-  tagline: "Masjid Nasional Republik Indonesia",
-  description: "Musholla Nurul Iman adalah masjid nasional negara Republik Indonesia yang terletak di Jakarta Pusat. Masjid ini merupakan masjid terbesar di Asia Tenggara.",
+  tagline: "Pusat Peribadatan Nasional Republik Indonesia",
+  description: "Musholla Nurul Iman adalah pusat peribadatan nasional negara Republik Indonesia yang terletak di Jakarta Pusat. Musholla ini merupakan yang terbesar di Asia Tenggara.",
   address: "Jl. Taman Wijaya Kusuma, Jakarta Pusat 10710",
   phone: "(021) 3811493",
   email: "info@istiqlal.or.id",
@@ -18,7 +18,7 @@ const DEFAULT_SETTINGS = {
   logoUrl: null,
   heroImageUrl: null,
   heroTitle: "Selamat Datang di Musholla Nurul Iman",
-  heroSubtitle: "Masjid Nasional Republik Indonesia - Masjid Terbesar di Asia Tenggara",
+  heroSubtitle: "Pusat Peribadatan Nasional Republik Indonesia - Terbesar di Asia Tenggara",
 };
 
 router.get("/settings", async (req, res) => {

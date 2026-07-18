@@ -66,7 +66,7 @@ router.get("/cctv/access-settings", async (req, res) => {
     for (const r of rows) map[r.key] = r.value;
     res.json({
       cctvPageTitle: map["cctvPageTitle"] ?? "Live CCTV",
-      cctvPageDescription: map["cctvPageDescription"] ?? "Pantauan langsung area Masjid Istiqlal",
+      cctvPageDescription: map["cctvPageDescription"] ?? "Pantauan langsung area musholla",
       hasPassword: !!(map["cctvAccessPasswordHash"]),
     });
   } catch (err) {
