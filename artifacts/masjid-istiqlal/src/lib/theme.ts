@@ -64,6 +64,7 @@ export function loadGoogleFont(family: string) {
 /** Apply theme settings (from /api/settings) to CSS custom properties on :root */
 export function applyThemeSettings(settings: Record<string, unknown>) {
   const root = document.documentElement;
+  const body = document.body;
 
   const apply = (varName: string, value: unknown) => {
     if (isValidHex(value)) {
@@ -73,12 +74,43 @@ export function applyThemeSettings(settings: Record<string, unknown>) {
     }
   };
 
-  apply("--background", settings.themeBodyBg);
   apply("--primary", settings.themePrimaryColor);
   apply("--secondary", settings.themeSecondaryColor);
   apply("--accent", settings.themeSecondaryColor);
   apply("--footer-bg", settings.themeFooterBg);
   apply("--footer-text", settings.themeFooterText);
+
+  // ── Background pattern ────────────────────────────────────────────────────
+  const bgType = (settings.bgPatternType as string) || "pattern";
+
+  if (bgType === "pattern") {
+    // Restore the geometric tile pattern with blended body bg
+    apply("--background", settings.themeBodyBg);
+    body.style.backgroundImage = "url('/images/pattern-bg.png')";
+    body.style.backgroundRepeat = "repeat";
+    body.style.backgroundSize = "400px";
+    body.style.backgroundBlendMode = "multiply";
+  } else if (bgType === "color") {
+    // Solid color chosen by admin; override --background directly
+    const col = settings.bgPatternColor as string;
+    if (isValidHex(col)) {
+      root.style.setProperty("--background", hexToHsl(col));
+    } else {
+      apply("--background", settings.themeBodyBg);
+    }
+    body.style.backgroundImage = "none";
+    body.style.backgroundRepeat = "";
+    body.style.backgroundSize = "";
+    body.style.backgroundBlendMode = "";
+  } else {
+    // "none" — plain body bg, no pattern
+    apply("--background", settings.themeBodyBg);
+    body.style.backgroundImage = "none";
+    body.style.backgroundRepeat = "";
+    body.style.backgroundSize = "";
+    body.style.backgroundBlendMode = "";
+  }
+  // ─────────────────────────────────────────────────────────────────────────
 
   if (settings.themeBodyFont && typeof settings.themeBodyFont === "string") {
     loadGoogleFont(settings.themeBodyFont);

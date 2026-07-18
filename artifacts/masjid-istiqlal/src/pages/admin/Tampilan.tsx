@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useGetSettings, useUpdateSettings } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Save, RotateCcw, Palette, Type, Eye } from "lucide-react";
+import { Save, RotateCcw, Palette, Type, Eye, ImageOff, Paintbrush2, Layers } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { hslStringToHex, applyThemeSettings } from "@/lib/theme";
 
@@ -14,6 +14,8 @@ const DEFAULTS = {
   themeFooterText: hslStringToHex("46 65% 95%"),    // light gold
   themeBodyFont: "Plus Jakarta Sans",
   themeHeadingFont: "Amiri",
+  bgPatternType: "pattern" as BgPatternType,
+  bgPatternColor: hslStringToHex("40 33% 95%"),     // fallback for color mode
 };
 
 const BODY_FONTS = [
@@ -38,6 +40,8 @@ const HEADING_FONTS = [
   { value: "Plus Jakarta Sans", label: "Plus Jakarta Sans" },
 ];
 
+type BgPatternType = "pattern" | "color" | "none";
+
 type ThemeForm = {
   themeBodyBg: string;
   themePrimaryColor: string;
@@ -46,6 +50,8 @@ type ThemeForm = {
   themeFooterText: string;
   themeBodyFont: string;
   themeHeadingFont: string;
+  bgPatternType: BgPatternType;
+  bgPatternColor: string;
 };
 
 export function AdminTampilan() {
@@ -75,6 +81,8 @@ export function AdminTampilan() {
       themeFooterText: s.themeFooterText || DEFAULTS.themeFooterText,
       themeBodyFont: s.themeBodyFont || DEFAULTS.themeBodyFont,
       themeHeadingFont: s.themeHeadingFont || DEFAULTS.themeHeadingFont,
+      bgPatternType: (s.bgPatternType as BgPatternType) || DEFAULTS.bgPatternType,
+      bgPatternColor: s.bgPatternColor || DEFAULTS.bgPatternColor,
     });
   }, [settings]);
 
@@ -199,6 +207,118 @@ export function AdminTampilan() {
           </div>
           <div className="text-xs text-center py-1 bg-gray-50 text-gray-400">Pratinjau Footer</div>
         </div>
+      </div>
+
+      {/* Background Pattern */}
+      <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+        <div className="flex items-center gap-2 border-b pb-3">
+          <Layers size={18} className="text-primary" />
+          <h2 className="text-lg font-bold text-primary">Latar Belakang Halaman</h2>
+        </div>
+
+        <p className="text-xs text-gray-400 -mt-2">
+          Pilih jenis latar belakang yang tampil di seluruh halaman website.
+        </p>
+
+        {/* 3 option cards */}
+        <div className="grid grid-cols-3 gap-3">
+          {/* Motif Geometri */}
+          <button
+            type="button"
+            onClick={() => setForm(f => ({ ...f, bgPatternType: "pattern" }))}
+            className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all overflow-hidden ${
+              form.bgPatternType === "pattern"
+                ? "border-primary shadow-md"
+                : "border-gray-200 hover:border-gray-300"
+            }`}
+          >
+            {/* Mini pattern preview */}
+            <div
+              className="w-full h-16 rounded-lg mb-1"
+              style={{
+                backgroundColor: form.themeBodyBg,
+                backgroundImage: "url('/images/pattern-bg.png')",
+                backgroundRepeat: "repeat",
+                backgroundSize: "80px",
+                backgroundBlendMode: "multiply",
+              }}
+            />
+            <Layers size={16} className={form.bgPatternType === "pattern" ? "text-primary" : "text-gray-400"} />
+            <span className={`text-xs font-semibold ${form.bgPatternType === "pattern" ? "text-primary" : "text-gray-500"}`}>
+              Motif Geometri
+            </span>
+            {form.bgPatternType === "pattern" && (
+              <span className="absolute top-2 right-2 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                <svg viewBox="0 0 12 12" className="w-2.5 h-2.5 text-white fill-current"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </span>
+            )}
+          </button>
+
+          {/* Warna Polos */}
+          <button
+            type="button"
+            onClick={() => setForm(f => ({ ...f, bgPatternType: "color" }))}
+            className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all overflow-hidden ${
+              form.bgPatternType === "color"
+                ? "border-primary shadow-md"
+                : "border-gray-200 hover:border-gray-300"
+            }`}
+          >
+            <div
+              className="w-full h-16 rounded-lg mb-1 border border-gray-100"
+              style={{ backgroundColor: form.bgPatternColor }}
+            />
+            <Paintbrush2 size={16} className={form.bgPatternType === "color" ? "text-primary" : "text-gray-400"} />
+            <span className={`text-xs font-semibold ${form.bgPatternType === "color" ? "text-primary" : "text-gray-500"}`}>
+              Warna Polos
+            </span>
+            {form.bgPatternType === "color" && (
+              <span className="absolute top-2 right-2 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                <svg viewBox="0 0 12 12" className="w-2.5 h-2.5 text-white fill-current"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </span>
+            )}
+          </button>
+
+          {/* Tanpa Motif */}
+          <button
+            type="button"
+            onClick={() => setForm(f => ({ ...f, bgPatternType: "none" }))}
+            className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all overflow-hidden ${
+              form.bgPatternType === "none"
+                ? "border-primary shadow-md"
+                : "border-gray-200 hover:border-gray-300"
+            }`}
+          >
+            <div
+              className="w-full h-16 rounded-lg mb-1 border border-gray-100 flex items-center justify-center"
+              style={{ backgroundColor: form.themeBodyBg }}
+            >
+              <ImageOff size={22} className="text-gray-300" />
+            </div>
+            <ImageOff size={16} className={form.bgPatternType === "none" ? "text-primary" : "text-gray-400"} />
+            <span className={`text-xs font-semibold ${form.bgPatternType === "none" ? "text-primary" : "text-gray-500"}`}>
+              Tanpa Motif
+            </span>
+            {form.bgPatternType === "none" && (
+              <span className="absolute top-2 right-2 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                <svg viewBox="0 0 12 12" className="w-2.5 h-2.5 text-white fill-current"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Color picker — only shown for "color" mode */}
+        {form.bgPatternType === "color" && (
+          <div className="pt-2">
+            <ColorRow
+              label="Pilih Warna Latar"
+              description="Warna solid yang digunakan sebagai latar belakang seluruh halaman"
+              value={form.bgPatternColor}
+              onChange={(v) => setForm(f => ({ ...f, bgPatternColor: v }))}
+              defaultValue={DEFAULTS.bgPatternColor}
+            />
+          </div>
+        )}
       </div>
 
       {/* Fonts */}
