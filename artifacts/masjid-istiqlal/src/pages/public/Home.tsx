@@ -419,6 +419,24 @@ function isLocalStorage(url: string): boolean {
   return url.startsWith("/api/storage") || url.startsWith("blob:");
 }
 
+function getGDriveId(url: string): string | null {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    if (!parsed.hostname.includes("drive.google.com")) return null;
+    const idParam = parsed.searchParams.get("id");
+    if (idParam) return idParam;
+    const m = parsed.pathname.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    return m ? m[1] : null;
+  } catch {
+    return null;
+  }
+}
+
+function isGoogleDrive(url: string): boolean {
+  return !!getGDriveId(url);
+}
+
 function VideoCarouselSection({ section, cfg }: { section: HomepageSection; cfg: SectionCfg }) {
   const videos = cfg.videos ?? [];
   const [activeVideo, setActiveVideo] = useState<VideoItem | null>(null);
@@ -433,6 +451,8 @@ function VideoCarouselSection({ section, cfg }: { section: HomepageSection; cfg:
   const activeYtId = activeVideo ? getYtId(activeVideo.youtubeUrl) : null;
   const activeIsShort = activeVideo ? isYoutubeShort(activeVideo.youtubeUrl) : false;
   const activeIsLocal = activeVideo ? isLocalStorage(activeVideo.youtubeUrl) : false;
+  const activeGDriveId = activeVideo ? getGDriveId(activeVideo.youtubeUrl) : null;
+  const activeIsGDrive = !!activeGDriveId;
 
   return (
     <section className="py-20 bg-white">
