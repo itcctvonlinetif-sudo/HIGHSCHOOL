@@ -425,7 +425,7 @@ export function AdminBeranda() {
                         <Plus size={14} /> Tambah Video
                       </button>
                     </div>
-                    <p className="text-xs text-gray-400 mb-3">Masukkan URL YouTube atau upload file video langsung dari perangkat Anda.</p>
+                    <p className="text-xs text-gray-400 mb-3">Masukkan URL YouTube, URL video Google Drive, atau upload file video langsung dari perangkat Anda. Pastikan file Google Drive disetel “Siapa saja yang memiliki link dapat melihat”.</p>
                     <div className="space-y-3">
                       {videos.map((vid, idx) => {
                         const ytId = getYtId(vid.youtubeUrl);
@@ -452,7 +452,7 @@ export function AdminBeranda() {
                                   value={vid.youtubeUrl}
                                   onChange={(url) => updateVideo(idx, "youtubeUrl", url)}
                                   accept="video/*"
-                                  placeholder="https://youtube.com/watch?v=... atau https://youtu.be/..."
+                                   placeholder="YouTube atau Google Drive URL..."
                                 />
                                 <div className="grid grid-cols-2 gap-2">
                                   <div>

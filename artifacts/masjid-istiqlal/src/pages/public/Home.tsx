@@ -433,10 +433,6 @@ function getGDriveId(url: string): string | null {
   }
 }
 
-function isGoogleDrive(url: string): boolean {
-  return !!getGDriveId(url);
-}
-
 function VideoCarouselSection({ section, cfg }: { section: HomepageSection; cfg: SectionCfg }) {
   const videos = cfg.videos ?? [];
   const [activeVideo, setActiveVideo] = useState<VideoItem | null>(null);
@@ -538,7 +534,7 @@ function VideoCarouselSection({ section, cfg }: { section: HomepageSection; cfg:
         )}
       </div>
 
-      {/* Video Modal — aspect ratio adapts to portrait (short/local) or landscape */}
+      {/* Video Modal — Google Drive and regular videos use landscape; shorts/local use portrait */}
       {activeVideo && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -560,7 +556,7 @@ function VideoCarouselSection({ section, cfg }: { section: HomepageSection; cfg:
               <p className="text-white font-semibold mb-3 text-lg line-clamp-1">{activeVideo.title}</p>
             )}
 
-            {/* Player — portrait 9:16 for shorts/local, landscape 16:9 for regular */}
+            {/* Player — portrait 9:16 for shorts/local, landscape 16:9 for YouTube/Drive */}
             <div
               className="relative w-full rounded-2xl overflow-hidden bg-black shadow-2xl"
               style={{ paddingBottom: activeIsShort || activeIsLocal ? "177.78%" : "56.25%" }}
@@ -580,6 +576,14 @@ function VideoCarouselSection({ section, cfg }: { section: HomepageSection; cfg:
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 />
+              ) : activeIsGDrive ? (
+                <iframe
+                  className="absolute inset-0 w-full h-full"
+                  src={`https://drive.google.com/file/d/${activeGDriveId}/preview`}
+                  title={activeVideo.title || "Video Google Drive"}
+                  allow="autoplay; fullscreen"
+                  allowFullScreen
+                />
               ) : (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gray-900 text-white">
                   <p className="text-sm text-white/60">Tidak dapat memuat video</p>
@@ -589,7 +593,7 @@ function VideoCarouselSection({ section, cfg }: { section: HomepageSection; cfg:
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 text-sm font-semibold text-secondary hover:underline"
                   >
-                    Buka di YouTube <ExternalLink size={14} />
+                    Buka sumber video <ExternalLink size={14} />
                   </a>
                 </div>
               )}
@@ -602,7 +606,7 @@ function VideoCarouselSection({ section, cfg }: { section: HomepageSection; cfg:
                 rel="noopener noreferrer"
                 className="mt-3 flex items-center gap-1 text-white/60 hover:text-white text-xs transition-colors w-fit"
               >
-                <ExternalLink size={12} /> Buka di YouTube
+                <ExternalLink size={12} /> Buka sumber video
               </a>
             )}
           </div>
