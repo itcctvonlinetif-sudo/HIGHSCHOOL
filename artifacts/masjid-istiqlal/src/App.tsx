@@ -31,6 +31,7 @@ import { AdminLayanan } from "@/pages/admin/Layanan";
 import { AdminUbahPassword } from "@/pages/admin/UbahPassword";
 import { AdminBeranda } from "@/pages/admin/Beranda";
 import { AdminTampilan } from "@/pages/admin/Tampilan";
+import { AdminFooter } from "@/pages/admin/Footer";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
 const queryClient = new QueryClient({
@@ -75,6 +76,7 @@ function App() {
             <Route path="/admin/beranda" component={withAdmin(AdminBeranda)} />
             <Route path="/admin/settings" component={withAdmin(AdminSettings)} />
             <Route path="/admin/tampilan" component={withAdmin(AdminTampilan)} />
+            <Route path="/admin/footer" component={withAdmin(AdminFooter)} />
             <Route path="/admin/jadwal" component={withAdmin(AdminJadwal)} />
             <Route path="/admin/ubah-password" component={withAdmin(AdminUbahPassword)} />
 

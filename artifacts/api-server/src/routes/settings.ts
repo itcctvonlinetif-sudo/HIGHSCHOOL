@@ -19,6 +19,17 @@ const DEFAULT_SETTINGS = {
   heroImageUrl: null,
   heroTitle: "Selamat Datang di Musholla Nurul Iman",
   heroSubtitle: "Pusat Peribadatan Nasional Republik Indonesia - Terbesar di Asia Tenggara",
+  footerQuickLinksTitle: "Tautan Cepat",
+  footerContactTitle: "Kontak Kami",
+  footerQuickLinks: JSON.stringify([
+    { label: "Beranda", url: "/" },
+    { label: "Profil", url: "/profil" },
+    { label: "Berita & Artikel", url: "/berita" },
+    { label: "Jadwal Kegiatan", url: "/kegiatan" },
+    { label: "Live CCTV", url: "/cctv" },
+  ]),
+  footerCopyright: "All rights reserved.",
+  footerShowAdminLink: "true",
 };
 
 router.get("/settings", async (req, res) => {
