@@ -167,6 +167,14 @@ function VideoGallery({ videos }: { videos: any[] }) {
 export function Galeri() {
   const { data: gallery, isLoading } = useGetGallery();
   const [tab, setTab] = useState<"foto" | "video">("foto");
+  const [activePhoto, setActivePhoto] = useState<any | null>(null);
+
+  useEffect(() => {
+    if (!activePhoto) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setActivePhoto(null); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [activePhoto]);
 
   if (isLoading) return (
     <div className="h-[60vh] flex items-center justify-center">
@@ -208,7 +216,13 @@ export function Galeri() {
           <>
             <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
               {photos.map((item, index) => (
-                <div key={item.id} className="break-inside-avoid relative group rounded-2xl overflow-hidden shadow-md">
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setActivePhoto(item)}
+                  className="break-inside-avoid relative group rounded-2xl overflow-hidden shadow-md cursor-zoom-in text-left block w-full"
+                  aria-label={`Perbesar foto ${item.title}`}
+                >
                   <img
                     src={getImgSrc(item.imageUrl) || `https://images.unsplash.com/photo-${1584551246679 + index}-0?w=600&q=80`}
                     alt={item.title}
@@ -218,11 +232,44 @@ export function Galeri() {
                     <span className="text-secondary text-xs font-bold uppercase tracking-wider mb-1">{item.category}</span>
                     <h3 className="text-white font-bold text-lg leading-tight">{item.title}</h3>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
             {photos.length === 0 && (
               <div className="text-center py-20 text-muted-foreground">Belum ada foto yang tersedia.</div>
+            )}
+
+            {/* Photo lightbox */}
+            {activePhoto && (
+              <div
+                className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8"
+                style={{ backgroundColor: "rgba(0,0,0,0.88)" }}
+                onClick={() => setActivePhoto(null)}
+              >
+                <div
+                  className="relative flex items-center justify-center w-full min-w-0 min-h-[50vh] max-w-[92vw] max-h-[88vh] rounded-2xl overflow-hidden bg-black/30 shadow-2xl"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <img
+                    src={getImgSrc(activePhoto.imageUrl)}
+                    alt={activePhoto.title}
+                    className="max-w-full max-h-[88vh] w-auto h-auto object-contain"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setActivePhoto(null)}
+                    className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-black/60 px-3 py-2 text-sm text-white/90 hover:bg-black/80 hover:text-white transition-colors"
+                  >
+                    <X size={18} /> Tutup
+                  </button>
+                  {(activePhoto.title || activePhoto.category) && (
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-5 pt-10 pb-4 text-white">
+                      {activePhoto.category && <p className="text-secondary text-xs font-bold uppercase tracking-wider">{activePhoto.category}</p>}
+                      {activePhoto.title && <p className="font-semibold">{activePhoto.title}</p>}
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
           </>
         )}
