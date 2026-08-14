@@ -19,6 +19,20 @@ function getYtId(url: string): string | null {
 function isYoutubeShort(url: string) { return url?.includes("/shorts/"); }
 function isLocalVideo(url: string) { return url?.startsWith("/api/storage") || url?.startsWith("blob:"); }
 
+function getGDriveId(url: string): string | null {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    if (!parsed.hostname.includes("drive.google.com")) return null;
+    const idParam = parsed.searchParams.get("id");
+    if (idParam) return idParam;
+    const match = parsed.pathname.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    return match ? match[1] : null;
+  } catch {
+    return null;
+  }
+}
+
 /* ─── Video thumbnail carousel ──────────────────────────────── */
 function VideoGallery({ videos }: { videos: any[] }) {
   const [active, setActive] = useState<any | null>(null);
@@ -37,6 +51,8 @@ function VideoGallery({ videos }: { videos: any[] }) {
   const activeYtId = active ? getYtId(active.imageUrl) : null;
   const activeIsShort = active ? isYoutubeShort(active.imageUrl) : false;
   const activeIsLocal = active ? isLocalVideo(active.imageUrl) : false;
+  const activeGDriveId = active ? getGDriveId(active.imageUrl) : null;
+  const activeIsGDrive = !!activeGDriveId;
 
   return (
     <>
@@ -44,7 +60,12 @@ function VideoGallery({ videos }: { videos: any[] }) {
         {videos.map((vid, i) => {
           const ytId = getYtId(vid.imageUrl);
           const local = isLocalVideo(vid.imageUrl);
-          const thumbUrl = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null;
+          const gdriveId = getGDriveId(vid.imageUrl);
+          const thumbUrl = ytId
+            ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`
+            : gdriveId
+              ? `https://drive.google.com/thumbnail?id=${gdriveId}&sz=w1000`
+              : null;
 
           return (
             <button
@@ -111,13 +132,21 @@ function VideoGallery({ videos }: { videos: any[] }) {
               style={{ paddingBottom: activeIsShort || activeIsLocal ? "177.78%" : "56.25%" }}
             >
               {activeIsLocal ? (
-                <video className="absolute inset-0 w-full h-full" src={`${BASE}${active.imageUrl}`} controls autoPlay />
+                <video className="absolute inset-0 w-full h-full" src={getImgSrc(active.imageUrl)} controls autoPlay />
               ) : activeYtId ? (
                 <iframe
                   className="absolute inset-0 w-full h-full"
                   src={`https://www.youtube.com/embed/${activeYtId}?autoplay=1&rel=0`}
                   title={active.title || "Video"}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : activeIsGDrive ? (
+                <iframe
+                  className="absolute inset-0 w-full h-full"
+                  src={`https://drive.google.com/file/d/${activeGDriveId}/preview`}
+                  title={active.title || "Video Google Drive"}
+                  allow="autoplay; fullscreen"
                   allowFullScreen
                 />
               ) : (
