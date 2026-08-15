@@ -15,6 +15,8 @@ tags:
     description: Menu management
   - name: news
     description: News management
+  - name: classes
+    description: Class management
   - name: events
     description: Events management
   - name: gallery
@@ -286,6 +288,102 @@ paths:
       operationId: deleteNews
       tags: [news]
       summary: Delete news
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  /classes:
+    get:
+      operationId: getClasses
+      tags: [classes]
+      summary: Get all classes
+      parameters:
+        - name: published
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of classes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Class"
+    post:
+      operationId: createClass
+      tags: [classes]
+      summary: Create class
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClass"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Class"
+
+  /classes/{id}:
+    get:
+      operationId: getClassById
+      tags: [classes]
+      summary: Get class by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Class
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Class"
+    put:
+      operationId: updateClass
+      tags: [classes]
+      summary: Update class
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClass"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Class"
+    delete:
+      operationId: deleteClass
+      tags: [classes]
+      summary: Delete class
       parameters:
         - name: id
           in: path
@@ -747,6 +845,73 @@ components:
         - updatedAt
 
     CreateNews:
+      type: object
+      properties:
+        title:
+          type: string
+        slug:
+          type: string
+        content:
+          type: string
+        excerpt:
+          type: string
+        imageUrl:
+          type: string
+          nullable: true
+        author:
+          type: string
+        isPublished:
+          type: boolean
+        publishedAt:
+          type: string
+          nullable: true
+      required:
+        - title
+        - slug
+        - content
+        - excerpt
+        - author
+        - isPublished
+
+    Class:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        slug:
+          type: string
+        content:
+          type: string
+        excerpt:
+          type: string
+        imageUrl:
+          type: string
+          nullable: true
+        author:
+          type: string
+        isPublished:
+          type: boolean
+        publishedAt:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - title
+        - slug
+        - content
+        - excerpt
+        - author
+        - isPublished
+        - createdAt
+        - updatedAt
+
+    CreateClass:
       type: object
       properties:
         title:

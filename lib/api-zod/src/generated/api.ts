@@ -253,6 +253,107 @@ export const DeleteNewsResponse = zod.object({
 });
 
 /**
+ * @summary Get all classes
+ */
+export const GetClassesQueryParams = zod.object({
+  published: zod.coerce.boolean().optional(),
+});
+
+export const GetClassesResponseItem = zod.object({
+  id: zod.number(),
+  title: zod.string(),
+  slug: zod.string(),
+  content: zod.string(),
+  excerpt: zod.string(),
+  imageUrl: zod.string().nullish(),
+  author: zod.string(),
+  isPublished: zod.boolean(),
+  publishedAt: zod.string().nullish(),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+export const GetClassesResponse = zod.array(GetClassesResponseItem);
+
+/**
+ * @summary Create class
+ */
+export const CreateClassBody = zod.object({
+  title: zod.string(),
+  slug: zod.string(),
+  content: zod.string(),
+  excerpt: zod.string(),
+  imageUrl: zod.string().nullish(),
+  author: zod.string(),
+  isPublished: zod.boolean(),
+  publishedAt: zod.string().nullish(),
+});
+
+/**
+ * @summary Get class by ID
+ */
+export const GetClassByIdParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const GetClassByIdResponse = zod.object({
+  id: zod.number(),
+  title: zod.string(),
+  slug: zod.string(),
+  content: zod.string(),
+  excerpt: zod.string(),
+  imageUrl: zod.string().nullish(),
+  author: zod.string(),
+  isPublished: zod.boolean(),
+  publishedAt: zod.string().nullish(),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+
+/**
+ * @summary Update class
+ */
+export const UpdateClassParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const UpdateClassBody = zod.object({
+  title: zod.string(),
+  slug: zod.string(),
+  content: zod.string(),
+  excerpt: zod.string(),
+  imageUrl: zod.string().nullish(),
+  author: zod.string(),
+  isPublished: zod.boolean(),
+  publishedAt: zod.string().nullish(),
+});
+
+export const UpdateClassResponse = zod.object({
+  id: zod.number(),
+  title: zod.string(),
+  slug: zod.string(),
+  content: zod.string(),
+  excerpt: zod.string(),
+  imageUrl: zod.string().nullish(),
+  author: zod.string(),
+  isPublished: zod.boolean(),
+  publishedAt: zod.string().nullish(),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+
+/**
+ * @summary Delete class
+ */
+export const DeleteClassParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const DeleteClassResponse = zod.object({
+  success: zod.boolean(),
+  message: zod.string(),
+});
+
+/**
  * @summary Get all events
  */
 export const GetEventsResponseItem = zod.object({

@@ -25,6 +25,7 @@ const DEFAULT_SETTINGS = {
     { label: "Beranda", url: "/" },
     { label: "Profil", url: "/profil" },
     { label: "Berita & Artikel", url: "/berita" },
+    { label: "Kelas", url: "/kelas" },
     { label: "Jadwal Kegiatan", url: "/kegiatan" },
     { label: "Live CCTV", url: "/cctv" },
   ]),

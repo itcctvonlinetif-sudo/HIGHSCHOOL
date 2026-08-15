@@ -73,6 +73,31 @@ export interface CreateNews {
   publishedAt?: string | null;
 }
 
+export interface Class {
+  id: number;
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  imageUrl?: string | null;
+  author: string;
+  isPublished: boolean;
+  publishedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateClass {
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  imageUrl?: string | null;
+  author: string;
+  isPublished: boolean;
+  publishedAt?: string | null;
+}
+
 export interface Event {
   id: number;
   title: string;
@@ -173,5 +198,9 @@ export interface AdminLoginResponse {
 }
 
 export type GetNewsParams = {
+  published?: boolean;
+};
+
+export type GetClassesParams = {
   published?: boolean;
 };

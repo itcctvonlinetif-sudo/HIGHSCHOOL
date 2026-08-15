@@ -11,6 +11,9 @@ export function Navbar() {
   const { data: settings } = useGetSettings();
 
   const activeMenus = Array.isArray(menus) ? menus.filter(m => m.isActive).sort((a, b) => a.order - b.order) : [];
+  const navigationMenus = activeMenus.some(menu => menu.url === "/kelas")
+    ? activeMenus
+    : [...activeMenus, { id: -1, label: "Kelas", url: "/kelas", order: 999, parentId: null, isActive: true }];
 
   return (
     <header className="sticky top-0 z-50 w-full glass-panel border-b border-primary/10 transition-all duration-300">
@@ -37,7 +40,7 @@ export function Navbar() {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-1">
-            {activeMenus.map((menu) => {
+            {navigationMenus.map((menu) => {
               const isExternal = menu.url.startsWith("http://") || menu.url.startsWith("https://");
               const linkClass = `px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
                 location === menu.url
@@ -70,7 +73,7 @@ export function Navbar() {
       {isOpen && (
         <div className="md:hidden border-t border-primary/10 bg-white shadow-lg">
           <div className="px-4 pt-2 pb-6 space-y-1">
-            {activeMenus.map((menu) => {
+            {navigationMenus.map((menu) => {
               const isExternal = menu.url.startsWith("http://") || menu.url.startsWith("https://");
               const mobileClass = `block px-4 py-3 rounded-lg text-base font-medium transition-colors ${
                 location === menu.url

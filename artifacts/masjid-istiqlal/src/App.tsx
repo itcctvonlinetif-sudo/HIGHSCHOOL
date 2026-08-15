@@ -11,6 +11,7 @@ import { Home } from "@/pages/public/Home";
 import { Profil } from "@/pages/public/Profil";
 import { Berita } from "@/pages/public/Berita";
 import { BeritaDetail } from "@/pages/public/BeritaDetail";
+import { Kelas } from "@/pages/public/Kelas";
 import { Kegiatan } from "@/pages/public/Kegiatan";
 import { Galeri } from "@/pages/public/Galeri";
 import { CCTV } from "@/pages/public/CCTV";
@@ -22,6 +23,7 @@ import { AdminDashboard } from "@/pages/admin/Dashboard";
 import { AdminMenus } from "@/pages/admin/Menus";
 import { AdminPages } from "@/pages/admin/Pages";
 import { AdminBerita } from "@/pages/admin/Berita";
+import { AdminKelas } from "@/pages/admin/Kelas";
 import { AdminKegiatan } from "@/pages/admin/Kegiatan";
 import { AdminGaleri } from "@/pages/admin/Galeri";
 import { AdminCCTV } from "@/pages/admin/CCTVAdmin";
@@ -69,6 +71,7 @@ function App() {
             <Route path="/admin/menus" component={withAdmin(AdminMenus)} />
             <Route path="/admin/pages" component={withAdmin(AdminPages)} />
             <Route path="/admin/berita" component={withAdmin(AdminBerita)} />
+            <Route path="/admin/kelas" component={withAdmin(AdminKelas)} />
             <Route path="/admin/kegiatan" component={withAdmin(AdminKegiatan)} />
             <Route path="/admin/galeri" component={withAdmin(AdminGaleri)} />
             <Route path="/admin/cctv" component={withAdmin(AdminCCTV)} />
@@ -87,6 +90,7 @@ function App() {
             <Route path="/profil" component={withPublic(Profil)} />
             <Route path="/berita/:id" component={withPublic(BeritaDetail)} />
             <Route path="/berita" component={withPublic(Berita)} />
+            <Route path="/kelas" component={withPublic(Kelas)} />
             <Route path="/kegiatan" component={withPublic(Kegiatan)} />
             <Route path="/galeri" component={withPublic(Galeri)} />
             <Route path="/cctv" component={withPublic(CCTV)} />

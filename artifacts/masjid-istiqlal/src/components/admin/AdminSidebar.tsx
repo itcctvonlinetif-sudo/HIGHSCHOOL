@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { 
-  LayoutDashboard, Menu, FileText, Newspaper, 
+  LayoutDashboard, Menu, FileText, Newspaper, BookOpen,
   Calendar, Image as ImageIcon, Video, Settings, 
   Clock, LogOut, LayoutGrid, KeyRound, LayoutTemplate, Palette, PanelBottom
 } from "lucide-react";
@@ -13,6 +13,7 @@ const adminLinks = [
   { href: "/admin/pages", label: "Halaman Statis", icon: FileText },
   { href: "/admin/layanan", label: "Layanan", icon: LayoutGrid },
   { href: "/admin/berita", label: "Berita & Artikel", icon: Newspaper },
+  { href: "/admin/kelas", label: "Kelas", icon: BookOpen },
   { href: "/admin/kegiatan", label: "Kegiatan", icon: Calendar },
   { href: "/admin/galeri", label: "Galeri Foto", icon: ImageIcon },
   { href: "/admin/cctv", label: "Live CCTV", icon: Video },

@@ -1,0 +1,334 @@
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
+import {
+  getGetClassesQueryKey,
+  useCreateClass,
+  useDeleteClass,
+  useGetClasses,
+  useUpdateClass,
+} from "@workspace/api-client-react";
+import type { Class as ClassItem } from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { AlertCircle, BookOpen, Clock3, Edit2, Eye, EyeOff, LockKeyhole, Plus, Save, Settings2, Trash2, X } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { MediaUploadInput } from "@/components/MediaUploadInput";
+
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+interface ClassForm {
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  imageUrl: string;
+  author: string;
+  isPublished: boolean;
+}
+
+interface AccessForm {
+  classesPageTitle: string;
+  classesPageDescription: string;
+  classesAccessPassword: string;
+  hasPassword: boolean;
+}
+
+const defaultForm: ClassForm = {
+  title: "",
+  slug: "",
+  content: "",
+  excerpt: "",
+  imageUrl: "",
+  author: "Admin",
+  isPublished: true,
+};
+
+const defaultAccessForm: AccessForm = {
+  classesPageTitle: "",
+  classesPageDescription: "",
+  classesAccessPassword: "",
+  hasPassword: true,
+};
+
+function slugify(value: string) {
+  return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
+}
+
+export function AdminKelas() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const { data: classes, isLoading, isError } = useGetClasses();
+  const [activeTab, setActiveTab] = useState<"classes" | "access">("classes");
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [formData, setFormData] = useState<ClassForm>(defaultForm);
+  const [accessForm, setAccessForm] = useState<AccessForm>(defaultAccessForm);
+  const [accessLoading, setAccessLoading] = useState(true);
+  const [accessError, setAccessError] = useState("");
+  const [accessSaving, setAccessSaving] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+
+  const closeForm = () => {
+    setIsFormOpen(false);
+    setEditingId(null);
+    setFormData(defaultForm);
+  };
+
+  const invalidateClasses = () => {
+    queryClient.invalidateQueries({ queryKey: getGetClassesQueryKey() });
+  };
+
+  const createMutation = useCreateClass({
+    mutation: {
+      onSuccess: () => {
+        invalidateClasses();
+        toast({ title: "Kelas ditambahkan", description: "Materi baru berhasil disimpan." });
+        closeForm();
+      },
+      onError: () => toast({ variant: "destructive", title: "Gagal menyimpan", description: "Kelas belum berhasil ditambahkan." }),
+    },
+  });
+
+  const updateMutation = useUpdateClass({
+    mutation: {
+      onSuccess: () => {
+        invalidateClasses();
+        toast({ title: "Kelas diperbarui", description: "Perubahan materi sudah disimpan." });
+        closeForm();
+      },
+      onError: () => toast({ variant: "destructive", title: "Gagal menyimpan", description: "Perubahan kelas belum berhasil disimpan." }),
+    },
+  });
+
+  const deleteMutation = useDeleteClass({
+    mutation: {
+      onSuccess: () => {
+        invalidateClasses();
+        toast({ title: "Kelas dihapus", description: "Materi telah dihapus dari daftar." });
+      },
+      onError: () => toast({ variant: "destructive", title: "Gagal menghapus", description: "Kelas belum berhasil dihapus." }),
+    },
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+    setAccessLoading(true);
+    setAccessError("");
+
+    fetch(`${BASE}/api/admin/classes-access`, { credentials: "include" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Pengaturan akses tidak dapat dimuat");
+        return response.json() as Promise<Partial<AccessForm>>;
+      })
+      .then((data) => {
+        if (cancelled) return;
+        setAccessForm({
+          classesPageTitle: data.classesPageTitle || "Kelas Warga",
+          classesPageDescription: data.classesPageDescription || "Ruang belajar bersama untuk warga.",
+          classesAccessPassword: "",
+          hasPassword: data.hasPassword !== false,
+        });
+      })
+      .catch(() => {
+        if (!cancelled) setAccessError("Pengaturan akses belum dapat dimuat.");
+      })
+      .finally(() => {
+        if (!cancelled) setAccessLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const openCreate = () => {
+    setEditingId(null);
+    setFormData(defaultForm);
+    setIsFormOpen(true);
+  };
+
+  const openEdit = (item: ClassItem) => {
+    setEditingId(item.id);
+    setFormData({
+      title: item.title,
+      slug: item.slug,
+      content: item.content,
+      excerpt: item.excerpt,
+      imageUrl: item.imageUrl || "",
+      author: item.author,
+      isPublished: item.isPublished,
+    });
+    setIsFormOpen(true);
+  };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data = { ...formData, imageUrl: formData.imageUrl || null };
+    if (editingId !== null) updateMutation.mutate({ id: editingId, data });
+    else createMutation.mutate({ data });
+  };
+
+  const handleSaveAccess = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setAccessSaving(true);
+    try {
+      const body: Record<string, string> = {
+        classesPageTitle: accessForm.classesPageTitle,
+        classesPageDescription: accessForm.classesPageDescription,
+      };
+      if (accessForm.classesAccessPassword.trim()) body.classesAccessPassword = accessForm.classesAccessPassword;
+
+      const response = await fetch(`${BASE}/api/admin/classes-access`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(body),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.message || "Pengaturan belum berhasil disimpan.");
+
+      toast({ title: "Pengaturan disimpan", description: data.message || "Halaman Kelas berhasil diperbarui." });
+      setAccessForm((current) => ({ ...current, classesAccessPassword: "", hasPassword: true }));
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Gagal menyimpan pengaturan",
+        description: error instanceof Error ? error.message : "Koneksi ke server gagal.",
+      });
+    } finally {
+      setAccessSaving(false);
+    }
+  };
+
+  const items = Array.isArray(classes) ? classes : [];
+  const formBusy = createMutation.isPending || updateMutation.isPending;
+
+  return (
+    <div className="space-y-6 pb-10">
+      <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div>
+          <div className="mb-2 flex items-center gap-2 text-xs font-bold tracking-[0.16em] text-secondary uppercase"><BookOpen size={15} /> Ruang belajar warga</div>
+          <h1 className="text-3xl font-bold text-foreground">Manajemen Kelas</h1>
+          <p className="mt-1 max-w-xl text-sm text-muted-foreground">Kelola materi pembelajaran dan pintu akses khusus warga Musholla Nurul Iman.</p>
+        </div>
+        {activeTab === "classes" && (
+          <button type="button" onClick={openCreate} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/15 transition hover:-translate-y-0.5 hover:bg-primary/90">
+            <Plus size={18} /> Tambah Kelas
+          </button>
+        )}
+      </header>
+
+      <div className="flex w-fit gap-1 rounded-xl border border-border bg-muted p-1">
+        <button type="button" onClick={() => setActiveTab("classes")} className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${activeTab === "classes" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+          Daftar Kelas
+        </button>
+        <button type="button" onClick={() => setActiveTab("access")} className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${activeTab === "access" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+          <Settings2 size={15} /> Pengaturan Akses
+        </button>
+      </div>
+
+      {activeTab === "classes" && (
+        <>
+          {isFormOpen && (
+            <section className="rounded-2xl border border-border bg-card p-5 shadow-xl shadow-primary/5 md:p-7">
+              <div className="mb-6 flex items-start justify-between gap-4">
+                <div>
+                  <p className="mb-1 text-xs font-bold tracking-[0.14em] text-secondary uppercase">{editingId !== null ? "Perbarui materi" : "Materi baru"}</p>
+                  <h2 className="text-2xl font-bold text-foreground">{editingId !== null ? "Edit Kelas" : "Tambah Kelas"}</h2>
+                </div>
+                <button type="button" onClick={closeForm} aria-label="Tutup formulir" className="rounded-lg p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"><X size={19} /></button>
+              </div>
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                  <div>
+                    <label htmlFor="class-title" className="mb-2 block text-sm font-semibold">Judul Kelas</label>
+                    <input id="class-title" type="text" value={formData.title} onChange={(event) => setFormData((current) => ({ ...current, title: event.target.value, slug: editingId === null ? slugify(event.target.value) : current.slug }))} className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10" required />
+                  </div>
+                  <div>
+                    <label htmlFor="class-author" className="mb-2 block text-sm font-semibold">Penulis</label>
+                    <input id="class-author" type="text" value={formData.author} onChange={(event) => setFormData((current) => ({ ...current, author: event.target.value }))} className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10" required />
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="class-slug" className="mb-2 block text-sm font-semibold">Slug</label>
+                  <input id="class-slug" type="text" value={formData.slug} onChange={(event) => setFormData((current) => ({ ...current, slug: slugify(event.target.value) }))} className="w-full rounded-xl border border-input bg-background px-4 py-3 font-mono text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10" required />
+                </div>
+                <MediaUploadInput label="Gambar Kelas (Opsional)" value={formData.imageUrl} onChange={(imageUrl) => setFormData((current) => ({ ...current, imageUrl }))} accept="image/*" placeholder="https://..." />
+                <div>
+                  <label htmlFor="class-excerpt" className="mb-2 block text-sm font-semibold">Ringkasan</label>
+                  <textarea id="class-excerpt" value={formData.excerpt} onChange={(event) => setFormData((current) => ({ ...current, excerpt: event.target.value }))} rows={3} className="w-full resize-none rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10" required />
+                </div>
+                <div>
+                  <label htmlFor="class-content" className="mb-2 block text-sm font-semibold">Konten Kelas (HTML)</label>
+                  <textarea id="class-content" value={formData.content} onChange={(event) => setFormData((current) => ({ ...current, content: event.target.value }))} rows={9} className="w-full rounded-xl border border-input bg-background px-4 py-3 font-mono text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10" required />
+                </div>
+                <label className="flex cursor-pointer items-center gap-3 border-t border-border pt-5 text-sm font-semibold">
+                  <input type="checkbox" checked={formData.isPublished} onChange={(event) => setFormData((current) => ({ ...current, isPublished: event.target.checked }))} className="h-4 w-4 rounded border-input text-primary accent-primary" />
+                  Terbitkan kelas ini
+                </label>
+                <div className="flex flex-col-reverse justify-end gap-3 border-t border-border pt-5 sm:flex-row">
+                  <button type="button" onClick={closeForm} className="rounded-xl px-5 py-3 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-foreground">Batal</button>
+                  <button type="submit" disabled={formBusy} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60">
+                    <Save size={16} /> {formBusy ? "Menyimpan..." : editingId !== null ? "Simpan Perubahan" : "Simpan Kelas"}
+                  </button>
+                </div>
+              </form>
+            </section>
+          )}
+
+          <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+            <div className="hidden overflow-x-auto md:block">
+              <table className="w-full border-collapse text-left">
+                <thead className="border-b border-border bg-muted/60 text-xs font-bold tracking-[0.1em] text-muted-foreground uppercase">
+                  <tr><th className="px-6 py-4">Kelas</th><th className="px-6 py-4">Penulis</th><th className="px-6 py-4">Status</th><th className="px-6 py-4 text-right">Aksi</th></tr>
+                </thead>
+                <tbody>
+                  {isLoading && <tr><td colSpan={4} className="px-6 py-12 text-center text-sm text-muted-foreground">Memuat daftar kelas...</td></tr>}
+                  {isError && <tr><td colSpan={4} className="px-6 py-12 text-center text-sm text-destructive">Daftar kelas belum dapat dimuat.</td></tr>}
+                  {!isLoading && !isError && items.length === 0 && <tr><td colSpan={4} className="px-6 py-16 text-center"><BookOpen className="mx-auto mb-3 text-secondary" size={26} /><p className="text-sm text-muted-foreground">Belum ada materi kelas.</p></td></tr>}
+                  {!isLoading && !isError && items.map((item) => (
+                    <tr key={item.id} className="border-b border-border last:border-0 transition hover:bg-muted/30">
+                      <td className="max-w-sm px-6 py-4"><p className="font-semibold text-foreground">{item.title}</p><p className="mt-1 truncate text-xs text-muted-foreground">{item.excerpt}</p></td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground">{item.author}</td>
+                      <td className="px-6 py-4"><span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold ${item.isPublished ? "bg-primary/10 text-primary" : "bg-secondary/15 text-secondary-foreground"}`}>{item.isPublished ? <Eye size={13} /> : <Clock3 size={13} />}{item.isPublished ? "Terbit" : "Draft"}</span></td>
+                      <td className="px-6 py-4 text-right"><button type="button" onClick={() => openEdit(item)} aria-label={`Edit ${item.title}`} className="mr-1 rounded-lg p-2 text-primary transition hover:bg-primary/10"><Edit2 size={17} /></button><button type="button" onClick={() => { if (window.confirm("Hapus kelas ini?")) deleteMutation.mutate({ id: item.id }); }} aria-label={`Hapus ${item.title}`} className="rounded-lg p-2 text-destructive transition hover:bg-destructive/10"><Trash2 size={17} /></button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="divide-y divide-border md:hidden">
+              {isLoading && <div className="px-5 py-12 text-center text-sm text-muted-foreground">Memuat daftar kelas...</div>}
+              {isError && <div className="px-5 py-12 text-center text-sm text-destructive">Daftar kelas belum dapat dimuat.</div>}
+              {!isLoading && !isError && items.length === 0 && <div className="px-5 py-14 text-center text-sm text-muted-foreground">Belum ada materi kelas.</div>}
+              {!isLoading && !isError && items.map((item) => (
+                <div key={item.id} className="flex items-start justify-between gap-4 px-5 py-4">
+                  <div className="min-w-0"><p className="truncate font-semibold">{item.title}</p><p className="mt-1 text-xs text-muted-foreground">{item.author}</p><span className={`mt-3 inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${item.isPublished ? "bg-primary/10 text-primary" : "bg-secondary/15 text-secondary-foreground"}`}>{item.isPublished ? "Terbit" : "Draft"}</span></div>
+                  <div className="flex shrink-0 gap-1"><button type="button" onClick={() => openEdit(item)} aria-label={`Edit ${item.title}`} className="rounded-lg p-2 text-primary hover:bg-primary/10"><Edit2 size={17} /></button><button type="button" onClick={() => { if (window.confirm("Hapus kelas ini?")) deleteMutation.mutate({ id: item.id }); }} aria-label={`Hapus ${item.title}`} className="rounded-lg p-2 text-destructive hover:bg-destructive/10"><Trash2 size={17} /></button></div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </>
+      )}
+
+      {activeTab === "access" && (
+        <section className="max-w-2xl rounded-2xl border border-border bg-card p-5 shadow-sm md:p-8">
+          <div className="mb-7 flex items-start gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-secondary/15 text-secondary"><LockKeyhole size={22} /></div>
+            <div><h2 className="text-2xl font-bold text-foreground">Pengaturan akses</h2><p className="mt-1 text-sm leading-6 text-muted-foreground">Atur identitas halaman Kelas dan password yang digunakan warga. Password tersimpan tidak ditampilkan.</p></div>
+          </div>
+          {accessLoading ? <div className="space-y-4"><div className="h-12 animate-pulse rounded-xl bg-muted" /><div className="h-24 animate-pulse rounded-xl bg-muted" /><div className="h-12 animate-pulse rounded-xl bg-muted" /></div> : accessError ? (
+            <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-5 text-sm text-destructive"><div className="flex items-center gap-2"><AlertCircle size={17} /> {accessError}</div><p className="mt-2 text-xs text-muted-foreground">Segarkan halaman untuk mencoba kembali.</p></div>
+          ) : (
+            <form onSubmit={handleSaveAccess} className="space-y-5">
+              <div><label htmlFor="access-title" className="mb-2 block text-sm font-semibold">Judul halaman</label><input id="access-title" type="text" value={accessForm.classesPageTitle} onChange={(event) => setAccessForm((current) => ({ ...current, classesPageTitle: event.target.value }))} className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10" required /></div>
+              <div><label htmlFor="access-description" className="mb-2 block text-sm font-semibold">Deskripsi halaman</label><textarea id="access-description" value={accessForm.classesPageDescription} onChange={(event) => setAccessForm((current) => ({ ...current, classesPageDescription: event.target.value }))} rows={4} className="w-full resize-none rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10" required /></div>
+              <div className="border-t border-border pt-5"><div className="mb-2 flex items-center gap-2"><label htmlFor="access-password" className="text-sm font-semibold">Password warga</label><span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">{accessForm.hasPassword ? "Aktif" : "Belum diset"}</span></div><p className="mb-3 text-xs leading-5 text-muted-foreground">Isi hanya jika ingin membuat password baru. Nilai password tersimpan tidak pernah ditampilkan.</p><div className="relative"><input id="access-password" type={showNewPassword ? "text" : "password"} value={accessForm.classesAccessPassword} onChange={(event) => setAccessForm((current) => ({ ...current, classesAccessPassword: event.target.value }))} placeholder="Password baru (opsional)" className="w-full rounded-xl border border-input bg-background px-4 py-3 pr-12 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10" /><button type="button" aria-label={showNewPassword ? "Sembunyikan password baru" : "Tampilkan password baru"} onClick={() => setShowNewPassword((value) => !value)} className="absolute inset-y-0 right-0 px-4 text-muted-foreground hover:text-primary">{showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button></div></div>
+              <div className="flex justify-end border-t border-border pt-5"><button type="submit" disabled={accessSaving} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"><Save size={16} /> {accessSaving ? "Menyimpan..." : "Simpan Pengaturan"}</button></div>
+            </form>
+          )}
+        </section>
+      )}
+    </div>
+  );
+}

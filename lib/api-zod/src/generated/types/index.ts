@@ -9,7 +9,9 @@
 export * from "./adminLoginRequest";
 export * from "./adminLoginResponse";
 export * from "./cctvCamera";
+export * from "./class";
 export * from "./createCctvCamera";
+export * from "./createClass";
 export * from "./createEvent";
 export * from "./createGalleryItem";
 export * from "./createMenu";
@@ -18,6 +20,7 @@ export * from "./createPage";
 export * from "./deleteResponse";
 export * from "./event";
 export * from "./galleryItem";
+export * from "./getClassesParams";
 export * from "./getNewsParams";
 export * from "./healthStatus";
 export * from "./menu";

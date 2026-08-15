@@ -20,7 +20,9 @@ import type {
   AdminLoginRequest,
   AdminLoginResponse,
   CctvCamera,
+  Class,
   CreateCctvCamera,
+  CreateClass,
   CreateEvent,
   CreateGalleryItem,
   CreateMenu,
@@ -29,6 +31,7 @@ import type {
   DeleteResponse,
   Event,
   GalleryItem,
+  GetClassesParams,
   GetNewsParams,
   HealthStatus,
   Menu,
@@ -1271,6 +1274,444 @@ export const useDeleteNews = <
   TContext
 > => {
   return useMutation(getDeleteNewsMutationOptions(options));
+};
+
+/**
+ * @summary Get all classes
+ */
+export const getGetClassesUrl = (params?: GetClassesParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/classes?${stringifiedParams}`
+    : `/api/classes`;
+};
+
+export const getClasses = async (
+  params?: GetClassesParams,
+  options?: RequestInit,
+): Promise<Class[]> => {
+  return customFetch<Class[]>(getGetClassesUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetClassesQueryKey = (params?: GetClassesParams) => {
+  return [`/api/classes`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetClassesQueryOptions = <
+  TData = Awaited<ReturnType<typeof getClasses>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: GetClassesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getClasses>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetClassesQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getClasses>>> = ({
+    signal,
+  }) => getClasses(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getClasses>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetClassesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getClasses>>
+>;
+export type GetClassesQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get all classes
+ */
+
+export function useGetClasses<
+  TData = Awaited<ReturnType<typeof getClasses>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: GetClassesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getClasses>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetClassesQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Create class
+ */
+export const getCreateClassUrl = () => {
+  return `/api/classes`;
+};
+
+export const createClass = async (
+  createClass: CreateClass,
+  options?: RequestInit,
+): Promise<Class> => {
+  return customFetch<Class>(getCreateClassUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(createClass),
+  });
+};
+
+export const getCreateClassMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createClass>>,
+    TError,
+    { data: BodyType<CreateClass> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createClass>>,
+  TError,
+  { data: BodyType<CreateClass> },
+  TContext
+> => {
+  const mutationKey = ["createClass"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createClass>>,
+    { data: BodyType<CreateClass> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createClass(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateClassMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createClass>>
+>;
+export type CreateClassMutationBody = BodyType<CreateClass>;
+export type CreateClassMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Create class
+ */
+export const useCreateClass = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createClass>>,
+    TError,
+    { data: BodyType<CreateClass> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createClass>>,
+  TError,
+  { data: BodyType<CreateClass> },
+  TContext
+> => {
+  return useMutation(getCreateClassMutationOptions(options));
+};
+
+/**
+ * @summary Get class by ID
+ */
+export const getGetClassByIdUrl = (id: number) => {
+  return `/api/classes/${id}`;
+};
+
+export const getClassById = async (
+  id: number,
+  options?: RequestInit,
+): Promise<Class> => {
+  return customFetch<Class>(getGetClassByIdUrl(id), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetClassByIdQueryKey = (id: number) => {
+  return [`/api/classes/${id}`] as const;
+};
+
+export const getGetClassByIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getClassById>>,
+  TError = ErrorType<unknown>,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getClassById>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetClassByIdQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getClassById>>> = ({
+    signal,
+  }) => getClassById(id, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getClassById>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetClassByIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getClassById>>
+>;
+export type GetClassByIdQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get class by ID
+ */
+
+export function useGetClassById<
+  TData = Awaited<ReturnType<typeof getClassById>>,
+  TError = ErrorType<unknown>,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getClassById>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetClassByIdQueryOptions(id, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Update class
+ */
+export const getUpdateClassUrl = (id: number) => {
+  return `/api/classes/${id}`;
+};
+
+export const updateClass = async (
+  id: number,
+  createClass: CreateClass,
+  options?: RequestInit,
+): Promise<Class> => {
+  return customFetch<Class>(getUpdateClassUrl(id), {
+    ...options,
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(createClass),
+  });
+};
+
+export const getUpdateClassMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateClass>>,
+    TError,
+    { id: number; data: BodyType<CreateClass> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateClass>>,
+  TError,
+  { id: number; data: BodyType<CreateClass> },
+  TContext
+> => {
+  const mutationKey = ["updateClass"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateClass>>,
+    { id: number; data: BodyType<CreateClass> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return updateClass(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdateClassMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateClass>>
+>;
+export type UpdateClassMutationBody = BodyType<CreateClass>;
+export type UpdateClassMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Update class
+ */
+export const useUpdateClass = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateClass>>,
+    TError,
+    { id: number; data: BodyType<CreateClass> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof updateClass>>,
+  TError,
+  { id: number; data: BodyType<CreateClass> },
+  TContext
+> => {
+  return useMutation(getUpdateClassMutationOptions(options));
+};
+
+/**
+ * @summary Delete class
+ */
+export const getDeleteClassUrl = (id: number) => {
+  return `/api/classes/${id}`;
+};
+
+export const deleteClass = async (
+  id: number,
+  options?: RequestInit,
+): Promise<DeleteResponse> => {
+  return customFetch<DeleteResponse>(getDeleteClassUrl(id), {
+    ...options,
+    method: "DELETE",
+  });
+};
+
+export const getDeleteClassMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteClass>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteClass>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["deleteClass"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteClass>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteClass(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteClassMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteClass>>
+>;
+
+export type DeleteClassMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Delete class
+ */
+export const useDeleteClass = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteClass>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteClass>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getDeleteClassMutationOptions(options));
 };
 
 /**
