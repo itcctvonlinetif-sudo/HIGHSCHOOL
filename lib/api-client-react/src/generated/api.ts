@@ -1892,6 +1892,98 @@ export const useCreateClassGalleryItem = <
 };
 
 /**
+ * @summary Update a class gallery item
+ */
+export const getUpdateClassGalleryItemUrl = (classId: number, id: number) => {
+  return `/api/classes/${classId}/gallery/${id}`;
+};
+
+export const updateClassGalleryItem = async (
+  classId: number,
+  id: number,
+  createClassGalleryItem: CreateClassGalleryItem,
+  options?: RequestInit,
+): Promise<ClassGalleryItem> => {
+  return customFetch<ClassGalleryItem>(
+    getUpdateClassGalleryItemUrl(classId, id),
+    {
+      ...options,
+      method: "PUT",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(createClassGalleryItem),
+    },
+  );
+};
+
+export const getUpdateClassGalleryItemMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateClassGalleryItem>>,
+    TError,
+    { classId: number; id: number; data: BodyType<CreateClassGalleryItem> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateClassGalleryItem>>,
+  TError,
+  { classId: number; id: number; data: BodyType<CreateClassGalleryItem> },
+  TContext
+> => {
+  const mutationKey = ["updateClassGalleryItem"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateClassGalleryItem>>,
+    { classId: number; id: number; data: BodyType<CreateClassGalleryItem> }
+  > = (props) => {
+    const { classId, id, data } = props ?? {};
+
+    return updateClassGalleryItem(classId, id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdateClassGalleryItemMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateClassGalleryItem>>
+>;
+export type UpdateClassGalleryItemMutationBody =
+  BodyType<CreateClassGalleryItem>;
+export type UpdateClassGalleryItemMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Update a class gallery item
+ */
+export const useUpdateClassGalleryItem = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateClassGalleryItem>>,
+    TError,
+    { classId: number; id: number; data: BodyType<CreateClassGalleryItem> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof updateClassGalleryItem>>,
+  TError,
+  { classId: number; id: number; data: BodyType<CreateClassGalleryItem> },
+  TContext
+> => {
+  return useMutation(getUpdateClassGalleryItemMutationOptions(options));
+};
+
+/**
  * @summary Delete a class gallery item
  */
 export const getDeleteClassGalleryItemUrl = (classId: number, id: number) => {

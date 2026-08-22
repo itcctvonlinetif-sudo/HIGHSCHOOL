@@ -443,6 +443,34 @@ paths:
                 $ref: "#/components/schemas/ClassGalleryItem"
 
   /classes/{classId}/gallery/{id}:
+    put:
+      operationId: updateClassGalleryItem
+      tags: [classes]
+      summary: Update a class gallery item
+      parameters:
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClassGalleryItem"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassGalleryItem"
     delete:
       operationId: deleteClassGalleryItem
       tags: [classes]

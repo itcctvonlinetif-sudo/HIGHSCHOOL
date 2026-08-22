@@ -1,7 +1,7 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
 import { db, classesTable, classGalleryTable, settingsTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 const router = Router();
 const DEFAULT_ACCESS_PASSWORD = "kelas123";
@@ -101,12 +101,32 @@ router.post("/classes/:id/gallery", async (req, res) => {
   }
 });
 
+router.put("/classes/:classId/gallery/:id", async (req, res) => {
+  try {
+    const classId = parseInt(req.params.classId, 10);
+    const id = parseInt(req.params.id, 10);
+    const { title, imageUrl, isActive } = req.body;
+    if (!title || !imageUrl) return res.status(400).json({ error: "Title and image URL are required" });
+    const [item] = await db.update(classGalleryTable)
+      .set({ title, imageUrl, isActive: isActive ?? true })
+      .where(and(eq(classGalleryTable.id, id), eq(classGalleryTable.classId, classId)))
+      .returning();
+    if (!item) return res.status(404).json({ error: "Class gallery item not found" });
+    res.json(item);
+  } catch (err) {
+    req.log.error({ err }, "Failed to update class gallery item");
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 router.delete("/classes/:classId/gallery/:id", async (req, res) => {
   try {
     const classId = parseInt(req.params.classId, 10);
     const id = parseInt(req.params.id, 10);
-    const deleted = await db.delete(classGalleryTable).where(eq(classGalleryTable.id, id)).returning();
-    if (!deleted[0] || deleted[0].classId !== classId) return res.status(404).json({ error: "Class gallery item not found" });
+    const deleted = await db.delete(classGalleryTable)
+      .where(and(eq(classGalleryTable.id, id), eq(classGalleryTable.classId, classId)))
+      .returning();
+    if (!deleted[0]) return res.status(404).json({ error: "Class gallery item not found" });
     res.json({ success: true, message: "Class gallery item deleted" });
   } catch (err) {
     req.log.error({ err }, "Failed to delete class gallery item");

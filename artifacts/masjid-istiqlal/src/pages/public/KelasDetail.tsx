@@ -21,6 +21,7 @@ export function KelasDetail() {
     query: { enabled: id > 0 },
   });
   const { data: gallery } = useGetClassGallery(id, { query: { enabled: hasAccess && id > 0 } });
+  const activeGallery = Array.isArray(gallery) ? gallery.filter((photo) => photo.isActive) : [];
   const [activeImage, setActiveImage] = useState<string | null>(null);
 
   if (!hasAccess) {
@@ -76,11 +77,11 @@ export function KelasDetail() {
         )}
         <p className="mb-8 text-lg leading-8 text-muted-foreground">{item.excerpt}</p>
         <div className="prose prose-lg prose-green max-w-none prose-headings:font-display prose-headings:text-primary prose-p:text-muted-foreground prose-p:leading-relaxed" dangerouslySetInnerHTML={{ __html: item.content }} />
-        {Array.isArray(gallery) && gallery.length > 0 && (
+        {activeGallery.length > 0 && (
           <section className="mt-14 border-t border-border pt-10">
             <div className="mb-6 flex items-center gap-3"><ImageIcon className="text-secondary" size={22} /><div><h2 className="text-2xl font-bold text-primary">Galeri Kelas</h2><p className="text-sm text-muted-foreground">Dokumentasi untuk materi ini</p></div></div>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-              {gallery.map((photo) => <button key={photo.id} type="button" onClick={() => setActiveImage(getMediaSrc(photo.imageUrl))} className="group aspect-square overflow-hidden rounded-2xl bg-muted text-left shadow-sm">
+              {activeGallery.map((photo) => <button key={photo.id} type="button" onClick={() => setActiveImage(getMediaSrc(photo.imageUrl))} className="group aspect-square overflow-hidden rounded-2xl bg-muted text-left shadow-sm">
                 <img src={getMediaSrc(photo.imageUrl) ?? ""} alt={photo.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
                 <span className="sr-only">{photo.title}</span>
               </button>)}

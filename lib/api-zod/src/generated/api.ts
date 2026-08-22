@@ -384,6 +384,29 @@ export const CreateClassGalleryItemBody = zod.object({
 });
 
 /**
+ * @summary Update a class gallery item
+ */
+export const UpdateClassGalleryItemParams = zod.object({
+  classId: zod.coerce.number(),
+  id: zod.coerce.number(),
+});
+
+export const UpdateClassGalleryItemBody = zod.object({
+  title: zod.string(),
+  imageUrl: zod.string(),
+  isActive: zod.boolean(),
+});
+
+export const UpdateClassGalleryItemResponse = zod.object({
+  id: zod.number(),
+  classId: zod.number(),
+  title: zod.string(),
+  imageUrl: zod.string(),
+  isActive: zod.boolean(),
+  createdAt: zod.string(),
+});
+
+/**
  * @summary Delete a class gallery item
  */
 export const DeleteClassGalleryItemParams = zod.object({

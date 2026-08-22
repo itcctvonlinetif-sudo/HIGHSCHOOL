@@ -2,12 +2,17 @@ import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import {
   getGetClassesQueryKey,
+  getGetClassGalleryQueryKey,
   useCreateClass,
+  useCreateClassGalleryItem,
+  useDeleteClassGalleryItem,
+  useUpdateClassGalleryItem,
   useDeleteClass,
+  useGetClassGallery,
   useGetClasses,
   useUpdateClass,
 } from "@workspace/api-client-react";
-import type { Class as ClassItem } from "@workspace/api-client-react";
+import type { Class as ClassItem, ClassGalleryItem } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, BookOpen, Clock3, Edit2, Eye, EyeOff, Image as ImageIcon, LockKeyhole, Plus, Save, Settings2, Trash2, X } from "lucide-react";
 import { toGDriveImageUrl } from "@/lib/gdrive";
@@ -33,6 +38,12 @@ interface AccessForm {
   hasPassword: boolean;
 }
 
+interface GalleryForm {
+  title: string;
+  imageUrl: string;
+  isActive: boolean;
+}
+
 const defaultForm: ClassForm = {
   title: "",
   slug: "",
@@ -50,6 +61,12 @@ const defaultAccessForm: AccessForm = {
   hasPassword: true,
 };
 
+const defaultGalleryForm: GalleryForm = {
+  title: "",
+  imageUrl: "",
+  isActive: true,
+};
+
 function slugify(value: string) {
   return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
 }
@@ -58,6 +75,85 @@ function getClassImage(url: string | null | undefined) {
   if (!url) return null;
   if (url.startsWith("/api/storage")) return `${BASE}${url}`;
   return toGDriveImageUrl(url);
+}
+
+function ClassGalleryPanel({
+  classId,
+  items,
+  isLoading,
+  form,
+  setForm,
+  onAdd,
+  editingGalleryId,
+  onEdit,
+  isSaving,
+  onDelete,
+  isDeleting,
+}: {
+  classId: number;
+  items: ClassGalleryItem[] | undefined;
+  isLoading: boolean;
+  form: GalleryForm;
+  setForm: React.Dispatch<React.SetStateAction<GalleryForm>>;
+  onAdd: () => void;
+  editingGalleryId: number | null;
+  onEdit: (item: ClassGalleryItem) => void;
+  isSaving: boolean;
+  onDelete: (id: number) => void;
+  isDeleting: boolean;
+}) {
+  return (
+    <section className="space-y-5 border-t border-border pt-6" aria-labelledby={`class-gallery-heading-${classId}`}>
+      <div>
+        <p className="mb-1 text-xs font-bold tracking-[0.14em] text-secondary uppercase">Dokumentasi</p>
+        <h3 id={`class-gallery-heading-${classId}`} className="text-xl font-bold text-foreground">Galeri Kelas</h3>
+        <p className="mt-1 text-sm text-muted-foreground">Tambahkan banyak foto untuk ditampilkan di halaman detail kelas.</p>
+      </div>
+                     <div className="rounded-xl border border-border bg-muted/30 p-4">
+        <div className="grid gap-4 md:grid-cols-2">
+          <div>
+            <label htmlFor="gallery-title" className="mb-2 block text-sm font-semibold">Judul foto</label>
+            <input id="gallery-title" type="text" value={form.title} onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))} placeholder="Contoh: Sesi pembukaan" className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10" required />
+          </div>
+          <label className="flex cursor-pointer items-end gap-3 pb-3 text-sm font-semibold">
+            <input type="checkbox" checked={form.isActive} onChange={(event) => setForm((current) => ({ ...current, isActive: event.target.checked }))} className="h-4 w-4 rounded border-input accent-primary" />
+            Tampilkan di detail kelas
+          </label>
+        </div>
+        <div className="mt-4">
+          <MediaUploadInput label="Sumber foto" value={form.imageUrl} onChange={(imageUrl) => setForm((current) => ({ ...current, imageUrl }))} accept="image/*" placeholder="https://... atau link Google Drive" />
+        </div>
+        <div className="mt-4 flex justify-end">
+          <button type="button" onClick={onAdd} disabled={isSaving || !form.imageUrl || !form.title.trim()} className="inline-flex items-center gap-2 rounded-xl bg-secondary px-4 py-2.5 text-sm font-bold text-secondary-foreground transition hover:bg-secondary/90 disabled:cursor-not-allowed disabled:opacity-60">
+            <Plus size={16} /> {isSaving ? "Menyimpan..." : "Tambah ke Galeri"}
+          </button>
+        </div>
+      </div>
+      {isLoading ? <div className="py-8 text-center text-sm text-muted-foreground">Memuat foto galeri...</div> : items && items.length > 0 ? (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {items.map((photo) => {
+            const src = getClassImage(photo.imageUrl);
+            return (
+              <div key={photo.id} className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-muted">
+                {src ? <img src={src} alt={photo.title} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center"><ImageIcon className="text-muted-foreground/50" size={26} /></div>}
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent p-3 pt-8">
+                  <p className="truncate text-sm font-semibold text-white">{photo.title}</p>
+                  <div className="mt-2 flex gap-1.5">
+                    <button type="button" onClick={() => onEdit(photo)} className="inline-flex items-center gap-1 rounded-md bg-white/15 px-2 py-1 text-xs font-semibold text-white hover:bg-primary" disabled={isSaving}>
+                      <Edit2 size={12} /> {editingGalleryId === photo.id ? "Mengedit" : "Edit"}
+                    </button>
+                    <button type="button" onClick={() => { if (window.confirm(`Hapus foto "${photo.title}"?`)) onDelete(photo.id); }} className="inline-flex items-center gap-1 rounded-md bg-white/15 px-2 py-1 text-xs font-semibold text-white hover:bg-destructive" disabled={isDeleting}>
+                      <Trash2 size={12} /> Hapus
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : <div className="rounded-xl border border-dashed border-border px-5 py-8 text-center text-sm text-muted-foreground">Belum ada foto di galeri kelas ini.</div>}
+    </section>
+  );
 }
 
 export function AdminKelas() {
@@ -74,11 +170,18 @@ export function AdminKelas() {
   const [accessSaving, setAccessSaving] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [viewMode, setViewMode] = useState<"list" | "gallery">("list");
+  const [galleryForm, setGalleryForm] = useState<GalleryForm>(defaultGalleryForm);
+  const [editingGalleryId, setEditingGalleryId] = useState<number | null>(null);
+  const { data: classGallery, isLoading: galleryLoading } = useGetClassGallery(editingId ?? 0, {
+    query: { enabled: editingId !== null },
+  });
 
   const closeForm = () => {
     setIsFormOpen(false);
     setEditingId(null);
     setFormData(defaultForm);
+    setGalleryForm(defaultGalleryForm);
+    setEditingGalleryId(null);
   };
 
   const invalidateClasses = () => {
@@ -114,6 +217,40 @@ export function AdminKelas() {
         toast({ title: "Kelas dihapus", description: "Materi telah dihapus dari daftar." });
       },
       onError: () => toast({ variant: "destructive", title: "Gagal menghapus", description: "Kelas belum berhasil dihapus." }),
+    },
+  });
+
+  const createGalleryMutation = useCreateClassGalleryItem({
+    mutation: {
+      onSuccess: () => {
+        if (editingId !== null) queryClient.invalidateQueries({ queryKey: getGetClassGalleryQueryKey(editingId) });
+        setGalleryForm(defaultGalleryForm);
+        setEditingGalleryId(null);
+        toast({ title: "Foto galeri ditambahkan", description: "Foto sudah tersimpan di kelas ini." });
+      },
+      onError: () => toast({ variant: "destructive", title: "Gagal menambahkan foto", description: "Foto galeri belum berhasil disimpan." }),
+    },
+  });
+
+  const updateGalleryMutation = useUpdateClassGalleryItem({
+    mutation: {
+      onSuccess: () => {
+        if (editingId !== null) queryClient.invalidateQueries({ queryKey: getGetClassGalleryQueryKey(editingId) });
+        setGalleryForm(defaultGalleryForm);
+        setEditingGalleryId(null);
+        toast({ title: "Foto galeri diperbarui" });
+      },
+      onError: () => toast({ variant: "destructive", title: "Gagal memperbarui foto", description: "Perubahan foto belum berhasil disimpan." }),
+    },
+  });
+
+  const deleteGalleryMutation = useDeleteClassGalleryItem({
+    mutation: {
+      onSuccess: () => {
+        if (editingId !== null) queryClient.invalidateQueries({ queryKey: getGetClassGalleryQueryKey(editingId) });
+        toast({ title: "Foto galeri dihapus" });
+      },
+      onError: () => toast({ variant: "destructive", title: "Gagal menghapus foto", description: "Foto galeri belum berhasil dihapus." }),
     },
   });
 
@@ -173,6 +310,18 @@ export function AdminKelas() {
     const data = { ...formData, imageUrl: formData.imageUrl || null };
     if (editingId !== null) updateMutation.mutate({ id: editingId, data });
     else createMutation.mutate({ data });
+  };
+
+  const handleGalleryAdd = () => {
+    if (editingId === null || !galleryForm.title.trim() || !galleryForm.imageUrl.trim()) return;
+    const data = { title: galleryForm.title.trim(), imageUrl: galleryForm.imageUrl.trim(), isActive: galleryForm.isActive };
+    if (editingGalleryId !== null) updateGalleryMutation.mutate({ classId: editingId, id: editingGalleryId, data });
+    else createGalleryMutation.mutate({ id: editingId, data });
+  };
+
+  const handleGalleryEdit = (photo: ClassGalleryItem) => {
+    setEditingGalleryId(photo.id);
+    setGalleryForm({ title: photo.title, imageUrl: photo.imageUrl, isActive: photo.isActive });
   };
 
   const handleSaveAccess = async (event: FormEvent<HTMLFormElement>) => {
@@ -292,7 +441,22 @@ export function AdminKelas() {
                   <label htmlFor="class-content" className="mb-2 block text-sm font-semibold">Konten Kelas (HTML)</label>
                   <textarea id="class-content" value={formData.content} onChange={(event) => setFormData((current) => ({ ...current, content: event.target.value }))} rows={9} className="w-full rounded-xl border border-input bg-background px-4 py-3 font-mono text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10" required />
                 </div>
-                <label className="flex cursor-pointer items-center gap-3 border-t border-border pt-5 text-sm font-semibold">
+                 {editingId !== null && (
+                   <ClassGalleryPanel
+                     classId={editingId}
+                     items={classGallery}
+                     isLoading={galleryLoading}
+                     form={galleryForm}
+                     setForm={setGalleryForm}
+                     onAdd={handleGalleryAdd}
+                     isSaving={createGalleryMutation.isPending || updateGalleryMutation.isPending}
+                     editingGalleryId={editingGalleryId}
+                     onEdit={handleGalleryEdit}
+                     onDelete={(id) => deleteGalleryMutation.mutate({ classId: editingId, id })}
+                     isDeleting={deleteGalleryMutation.isPending}
+                   />
+                 )}
+                 <label className="flex cursor-pointer items-center gap-3 border-t border-border pt-5 text-sm font-semibold">
                   <input type="checkbox" checked={formData.isPublished} onChange={(event) => setFormData((current) => ({ ...current, isPublished: event.target.checked }))} className="h-4 w-4 rounded border-input text-primary accent-primary" />
                   Terbitkan kelas ini
                 </label>
