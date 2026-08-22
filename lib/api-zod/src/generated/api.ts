@@ -354,6 +354,49 @@ export const DeleteClassResponse = zod.object({
 });
 
 /**
+ * @summary Get gallery items for a class
+ */
+export const GetClassGalleryParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const GetClassGalleryResponseItem = zod.object({
+  id: zod.number(),
+  classId: zod.number(),
+  title: zod.string(),
+  imageUrl: zod.string(),
+  isActive: zod.boolean(),
+  createdAt: zod.string(),
+});
+export const GetClassGalleryResponse = zod.array(GetClassGalleryResponseItem);
+
+/**
+ * @summary Create a class gallery item
+ */
+export const CreateClassGalleryItemParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const CreateClassGalleryItemBody = zod.object({
+  title: zod.string(),
+  imageUrl: zod.string(),
+  isActive: zod.boolean(),
+});
+
+/**
+ * @summary Delete a class gallery item
+ */
+export const DeleteClassGalleryItemParams = zod.object({
+  classId: zod.coerce.number(),
+  id: zod.coerce.number(),
+});
+
+export const DeleteClassGalleryItemResponse = zod.object({
+  success: zod.boolean(),
+  message: zod.string(),
+});
+
+/**
  * @summary Get all events
  */
 export const GetEventsResponseItem = zod.object({

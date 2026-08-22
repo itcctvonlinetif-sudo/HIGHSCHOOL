@@ -21,8 +21,10 @@ import type {
   AdminLoginResponse,
   CctvCamera,
   Class,
+  ClassGalleryItem,
   CreateCctvCamera,
   CreateClass,
+  CreateClassGalleryItem,
   CreateEvent,
   CreateGalleryItem,
   CreateMenu,
@@ -1712,6 +1714,269 @@ export const useDeleteClass = <
   TContext
 > => {
   return useMutation(getDeleteClassMutationOptions(options));
+};
+
+/**
+ * @summary Get gallery items for a class
+ */
+export const getGetClassGalleryUrl = (id: number) => {
+  return `/api/classes/${id}/gallery`;
+};
+
+export const getClassGallery = async (
+  id: number,
+  options?: RequestInit,
+): Promise<ClassGalleryItem[]> => {
+  return customFetch<ClassGalleryItem[]>(getGetClassGalleryUrl(id), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetClassGalleryQueryKey = (id: number) => {
+  return [`/api/classes/${id}/gallery`] as const;
+};
+
+export const getGetClassGalleryQueryOptions = <
+  TData = Awaited<ReturnType<typeof getClassGallery>>,
+  TError = ErrorType<unknown>,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getClassGallery>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetClassGalleryQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getClassGallery>>> = ({
+    signal,
+  }) => getClassGallery(id, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getClassGallery>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetClassGalleryQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getClassGallery>>
+>;
+export type GetClassGalleryQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get gallery items for a class
+ */
+
+export function useGetClassGallery<
+  TData = Awaited<ReturnType<typeof getClassGallery>>,
+  TError = ErrorType<unknown>,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getClassGallery>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetClassGalleryQueryOptions(id, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Create a class gallery item
+ */
+export const getCreateClassGalleryItemUrl = (id: number) => {
+  return `/api/classes/${id}/gallery`;
+};
+
+export const createClassGalleryItem = async (
+  id: number,
+  createClassGalleryItem: CreateClassGalleryItem,
+  options?: RequestInit,
+): Promise<ClassGalleryItem> => {
+  return customFetch<ClassGalleryItem>(getCreateClassGalleryItemUrl(id), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(createClassGalleryItem),
+  });
+};
+
+export const getCreateClassGalleryItemMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createClassGalleryItem>>,
+    TError,
+    { id: number; data: BodyType<CreateClassGalleryItem> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createClassGalleryItem>>,
+  TError,
+  { id: number; data: BodyType<CreateClassGalleryItem> },
+  TContext
+> => {
+  const mutationKey = ["createClassGalleryItem"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createClassGalleryItem>>,
+    { id: number; data: BodyType<CreateClassGalleryItem> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return createClassGalleryItem(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateClassGalleryItemMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createClassGalleryItem>>
+>;
+export type CreateClassGalleryItemMutationBody =
+  BodyType<CreateClassGalleryItem>;
+export type CreateClassGalleryItemMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Create a class gallery item
+ */
+export const useCreateClassGalleryItem = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createClassGalleryItem>>,
+    TError,
+    { id: number; data: BodyType<CreateClassGalleryItem> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createClassGalleryItem>>,
+  TError,
+  { id: number; data: BodyType<CreateClassGalleryItem> },
+  TContext
+> => {
+  return useMutation(getCreateClassGalleryItemMutationOptions(options));
+};
+
+/**
+ * @summary Delete a class gallery item
+ */
+export const getDeleteClassGalleryItemUrl = (classId: number, id: number) => {
+  return `/api/classes/${classId}/gallery/${id}`;
+};
+
+export const deleteClassGalleryItem = async (
+  classId: number,
+  id: number,
+  options?: RequestInit,
+): Promise<DeleteResponse> => {
+  return customFetch<DeleteResponse>(
+    getDeleteClassGalleryItemUrl(classId, id),
+    {
+      ...options,
+      method: "DELETE",
+    },
+  );
+};
+
+export const getDeleteClassGalleryItemMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteClassGalleryItem>>,
+    TError,
+    { classId: number; id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteClassGalleryItem>>,
+  TError,
+  { classId: number; id: number },
+  TContext
+> => {
+  const mutationKey = ["deleteClassGalleryItem"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteClassGalleryItem>>,
+    { classId: number; id: number }
+  > = (props) => {
+    const { classId, id } = props ?? {};
+
+    return deleteClassGalleryItem(classId, id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteClassGalleryItemMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteClassGalleryItem>>
+>;
+
+export type DeleteClassGalleryItemMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Delete a class gallery item
+ */
+export const useDeleteClassGalleryItem = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteClassGalleryItem>>,
+    TError,
+    { classId: number; id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteClassGalleryItem>>,
+  TError,
+  { classId: number; id: number },
+  TContext
+> => {
+  return useMutation(getDeleteClassGalleryItemMutationOptions(options));
 };
 
 /**

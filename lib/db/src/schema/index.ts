@@ -2,6 +2,7 @@ export * from "./menus";
 export * from "./pages";
 export * from "./news";
 export * from "./classes";
+export * from "./classGallery";
 export * from "./events";
 export * from "./gallery";
 export * from "./cctv";

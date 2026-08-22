@@ -138,6 +138,21 @@ export interface CreateGalleryItem {
   isActive: boolean;
 }
 
+export interface ClassGalleryItem {
+  id: number;
+  classId: number;
+  title: string;
+  imageUrl: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface CreateClassGalleryItem {
+  title: string;
+  imageUrl: string;
+  isActive: boolean;
+}
+
 export interface CctvCamera {
   id: number;
   name: string;

@@ -398,6 +398,74 @@ paths:
               schema:
                 $ref: "#/components/schemas/DeleteResponse"
 
+  /classes/{id}/gallery:
+    get:
+      operationId: getClassGallery
+      tags: [classes]
+      summary: Get gallery items for a class
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Class gallery
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClassGalleryItem"
+    post:
+      operationId: createClassGalleryItem
+      tags: [classes]
+      summary: Create a class gallery item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClassGalleryItem"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassGalleryItem"
+
+  /classes/{classId}/gallery/{id}:
+    delete:
+      operationId: deleteClassGalleryItem
+      tags: [classes]
+      summary: Delete a class gallery item
+      parameters:
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
   /events:
     get:
       operationId: getEvents
@@ -1042,6 +1110,43 @@ components:
         - title
         - imageUrl
         - category
+        - isActive
+
+    ClassGalleryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        classId:
+          type: integer
+        title:
+          type: string
+        imageUrl:
+          type: string
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+      required:
+        - id
+        - classId
+        - title
+        - imageUrl
+        - isActive
+        - createdAt
+
+    CreateClassGalleryItem:
+      type: object
+      properties:
+        title:
+          type: string
+        imageUrl:
+          type: string
+        isActive:
+          type: boolean
+      required:
+        - title
+        - imageUrl
         - isActive
 
     CctvCamera:
