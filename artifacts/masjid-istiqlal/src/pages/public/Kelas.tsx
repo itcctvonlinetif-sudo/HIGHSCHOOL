@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useGetClasses } from "@workspace/api-client-react";
+import { Link } from "wouter";
 import { AlertCircle, ArrowRight, BookOpen, Eye, EyeOff, ImageOff, LockKeyhole, RefreshCw, ShieldCheck } from "lucide-react";
 import { toGDriveImageUrl } from "@/lib/gdrive";
 
@@ -64,6 +65,7 @@ export function Kelas() {
         };
         setAccessSettings(settings);
         if (!settings.hasPassword || sessionStorage.getItem(SESSION_KEY) === "true") {
+          if (!settings.hasPassword) sessionStorage.setItem(SESSION_KEY, "true");
           setAccessGranted(true);
         }
       })
@@ -265,7 +267,7 @@ export function Kelas() {
         ) : (
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
             {publishedClasses.map((item) => (
-              <article key={item.id} className="group relative aspect-square overflow-hidden rounded-2xl bg-muted shadow-sm">
+              <Link href={`/kelas/${item.id}`} key={item.id} className="group relative block aspect-square overflow-hidden rounded-2xl bg-muted shadow-sm" aria-label={`Buka kelas ${item.title}`}>
                 <div className="absolute inset-0 overflow-hidden">
                   <img
                     src={getMediaSrc(item.imageUrl)}
@@ -284,7 +286,7 @@ export function Kelas() {
                   <p className="mt-1 line-clamp-2 text-xs text-white/75">{item.excerpt}</p>
                 </div>
                 {!item.imageUrl && <span className="absolute right-3 top-3 rounded-full bg-background/80 p-2 text-muted-foreground backdrop-blur-sm" title="Gambar belum tersedia"><ImageOff size={15} /></span>}
-              </article>
+              </Link>
             ))}
           </div>
         )}

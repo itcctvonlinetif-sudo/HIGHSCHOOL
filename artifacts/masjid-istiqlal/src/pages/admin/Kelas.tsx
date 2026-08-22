@@ -9,7 +9,8 @@ import {
 } from "@workspace/api-client-react";
 import type { Class as ClassItem } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { AlertCircle, BookOpen, Clock3, Edit2, Eye, EyeOff, LockKeyhole, Plus, Save, Settings2, Trash2, X } from "lucide-react";
+import { AlertCircle, BookOpen, Clock3, Edit2, Eye, EyeOff, Image as ImageIcon, LockKeyhole, Plus, Save, Settings2, Trash2, X } from "lucide-react";
+import { toGDriveImageUrl } from "@/lib/gdrive";
 import { useToast } from "@/hooks/use-toast";
 import { MediaUploadInput } from "@/components/MediaUploadInput";
 
@@ -53,6 +54,12 @@ function slugify(value: string) {
   return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
 }
 
+function getClassImage(url: string | null | undefined) {
+  if (!url) return null;
+  if (url.startsWith("/api/storage")) return `${BASE}${url}`;
+  return toGDriveImageUrl(url);
+}
+
 export function AdminKelas() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -66,6 +73,7 @@ export function AdminKelas() {
   const [accessError, setAccessError] = useState("");
   const [accessSaving, setAccessSaving] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [viewMode, setViewMode] = useState<"list" | "gallery">("list");
 
   const closeForm = () => {
     setIsFormOpen(false);
@@ -228,6 +236,29 @@ export function AdminKelas() {
 
       {activeTab === "classes" && (
         <>
+          <div className="flex w-fit gap-1 rounded-xl border border-border bg-muted p-1">
+            <button type="button" onClick={() => setViewMode("list")} className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${viewMode === "list" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>Daftar Materi</button>
+            <button type="button" onClick={() => setViewMode("gallery")} className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${viewMode === "gallery" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}><ImageIcon size={15} /> Galeri Kelas</button>
+          </div>
+          {viewMode === "gallery" && (
+            <section aria-label="Galeri Kelas">
+              {isLoading ? <div className="py-12 text-center text-sm text-muted-foreground">Memuat galeri kelas...</div> : items.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-border bg-card px-6 py-16 text-center"><ImageIcon className="mx-auto mb-3 text-secondary" size={28} /><p className="text-sm text-muted-foreground">Belum ada kelas untuk ditampilkan.</p></div>
+              ) : (
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                  {items.map((item) => {
+                    const src = getClassImage(item.imageUrl);
+                    return <button type="button" key={item.id} onClick={() => openEdit(item)} className="group relative aspect-square overflow-hidden rounded-2xl bg-muted text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+                      {src ? <img src={src} alt={item.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" onError={(event) => { event.currentTarget.style.display = "none"; }} /> : <div className="flex h-full w-full items-center justify-center"><ImageIcon className="text-muted-foreground/50" size={30} /></div>}
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent p-4 pt-12"><p className="font-semibold text-white">{item.title}</p><p className="mt-1 text-xs text-white/70">{item.isPublished ? "Terbit" : "Draft"}</p></div>
+                    </button>;
+                  })}
+                </div>
+              )}
+            </section>
+          )}
+          {viewMode === "list" && (
+          <>
           {isFormOpen && (
             <section className="rounded-2xl border border-border bg-card p-5 shadow-xl shadow-primary/5 md:p-7">
               <div className="mb-6 flex items-start justify-between gap-4">
@@ -308,6 +339,8 @@ export function AdminKelas() {
               ))}
             </div>
           </section>
+          </>
+          )}
         </>
       )}
 

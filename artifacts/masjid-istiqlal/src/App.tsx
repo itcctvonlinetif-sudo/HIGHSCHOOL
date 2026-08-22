@@ -12,6 +12,7 @@ import { Profil } from "@/pages/public/Profil";
 import { Berita } from "@/pages/public/Berita";
 import { BeritaDetail } from "@/pages/public/BeritaDetail";
 import { Kelas } from "@/pages/public/Kelas";
+import { KelasDetail } from "@/pages/public/KelasDetail";
 import { Kegiatan } from "@/pages/public/Kegiatan";
 import { Galeri } from "@/pages/public/Galeri";
 import { CCTV } from "@/pages/public/CCTV";
@@ -90,6 +91,7 @@ function App() {
             <Route path="/profil" component={withPublic(Profil)} />
             <Route path="/berita/:id" component={withPublic(BeritaDetail)} />
             <Route path="/berita" component={withPublic(Berita)} />
+            <Route path="/kelas/:id" component={withPublic(KelasDetail)} />
             <Route path="/kelas" component={withPublic(Kelas)} />
             <Route path="/kegiatan" component={withPublic(Kegiatan)} />
             <Route path="/galeri" component={withPublic(Galeri)} />
