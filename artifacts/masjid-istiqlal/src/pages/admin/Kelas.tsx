@@ -124,6 +124,11 @@ function ClassGalleryPanel({
   onDelete: (id: number) => void;
   isDeleting: boolean;
 }) {
+  const [galleryTab, setGalleryTab] = useState<"image" | "video">("image");
+  const photos = items?.filter((item) => item.mediaType !== "video") ?? [];
+  const videos = items?.filter((item) => item.mediaType === "video") ?? [];
+  const visibleItems = galleryTab === "video" ? videos : photos;
+
   return (
     <section className="space-y-5 border-t border-border pt-6" aria-labelledby={`class-gallery-heading-${classId}`}>
       <div>
@@ -156,9 +161,28 @@ function ClassGalleryPanel({
           </button>
         </div>
       </div>
-      {isLoading ? <div className="py-8 text-center text-sm text-muted-foreground">Memuat foto galeri...</div> : items && items.length > 0 ? (
+      {!isLoading && items && items.length > 0 && (
+        <div className="mb-5 flex w-fit gap-1 rounded-xl bg-muted p-1">
+          <button
+            type="button"
+            onClick={() => setGalleryTab("image")}
+            className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-all ${galleryTab === "image" ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            <ImageIcon size={16} /> Foto <span className="text-xs opacity-60">({photos.length})</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setGalleryTab("video")}
+            className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-all ${galleryTab === "video" ? "bg-background text-red-600 shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            <Video size={16} /> Video <span className="text-xs opacity-60">({videos.length})</span>
+          </button>
+        </div>
+      )}
+      {isLoading ? <div className="py-8 text-center text-sm text-muted-foreground">Memuat galeri...</div> : items && items.length > 0 ? (
+        visibleItems.length > 0 ? (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-           {items.map((photo) => {
+          {visibleItems.map((photo) => {
               const src = getClassMedia(photo.imageUrl);
               const ytId = photo.mediaType === "video" ? getYtId(photo.imageUrl) : null;
               const gdriveId = photo.mediaType === "video" ? getGDriveId(photo.imageUrl) : null;
@@ -187,7 +211,8 @@ function ClassGalleryPanel({
             );
           })}
         </div>
-      ) : <div className="rounded-xl border border-dashed border-border px-5 py-8 text-center text-sm text-muted-foreground">Belum ada foto di galeri kelas ini.</div>}
+        ) : <div className="rounded-xl border border-dashed border-border px-5 py-8 text-center text-sm text-muted-foreground">Belum ada {galleryTab === "video" ? "video" : "foto"} di galeri kelas ini.</div>
+      ) : <div className="rounded-xl border border-dashed border-border px-5 py-8 text-center text-sm text-muted-foreground">Belum ada media di galeri kelas ini.</div>}
     </section>
   );
 }

@@ -46,6 +46,10 @@ export function KelasDetail() {
   });
   const { data: gallery } = useGetClassGallery(id, { query: { enabled: hasAccess && id > 0 } });
   const activeGallery = Array.isArray(gallery) ? gallery.filter((photo) => photo.isActive) : [];
+  const [galleryTab, setGalleryTab] = useState<"image" | "video">("image");
+  const galleryPhotos = activeGallery.filter((photo) => photo.mediaType !== "video");
+  const galleryVideos = activeGallery.filter((photo) => photo.mediaType === "video");
+  const visibleGallery = galleryTab === "video" ? galleryVideos : galleryPhotos;
   const [activeMedia, setActiveMedia] = useState<any | null>(null);
 
   if (!hasAccess) {
@@ -104,8 +108,24 @@ export function KelasDetail() {
         {activeGallery.length > 0 && (
           <section className="mt-14 border-t border-border pt-10">
             <div className="mb-6 flex items-center gap-3"><ImageIcon className="text-secondary" size={22} /><div><h2 className="text-2xl font-bold text-primary">Galeri Kelas</h2><p className="text-sm text-muted-foreground">Dokumentasi untuk materi ini</p></div></div>
+            <div className="mb-6 flex w-fit gap-1 rounded-xl bg-muted p-1">
+              <button
+                type="button"
+                onClick={() => setGalleryTab("image")}
+                className={`inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-all ${galleryTab === "image" ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                <ImageIcon size={16} /> Foto <span className="ml-1 text-xs opacity-60">({galleryPhotos.length})</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setGalleryTab("video")}
+                className={`inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-all ${galleryTab === "video" ? "bg-background text-red-600 shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                <Video size={16} /> Video <span className="ml-1 text-xs opacity-60">({galleryVideos.length})</span>
+              </button>
+            </div>
             <div className="flex flex-wrap justify-center gap-5">
-              {activeGallery.map((photo) => {
+              {visibleGallery.map((photo) => {
                 const isVideo = photo.mediaType === "video";
                 const ytId = isVideo ? getYtId(photo.imageUrl) : null;
                 const gdriveId = isVideo ? getGDriveId(photo.imageUrl) : null;
@@ -134,6 +154,7 @@ export function KelasDetail() {
                 );
               })}
             </div>
+            {visibleGallery.length === 0 && <div className="py-16 text-center text-sm text-muted-foreground">Belum ada {galleryTab === "video" ? "video" : "foto"} yang tersedia.</div>}
           </section>
         )}
       </div>
