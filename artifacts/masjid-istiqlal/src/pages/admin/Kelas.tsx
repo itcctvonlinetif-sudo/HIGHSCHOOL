@@ -424,13 +424,13 @@ export function AdminKelas() {
     <div className="space-y-6 pb-10">
       <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <div className="mb-2 flex items-center gap-2 text-xs font-bold tracking-[0.16em] text-secondary uppercase"><BookOpen size={15} /> Ruang belajar warga</div>
-          <h1 className="text-3xl font-bold text-foreground">Manajemen Kelas</h1>
-          <p className="mt-1 max-w-xl text-sm text-muted-foreground">Kelola materi pembelajaran dan pintu akses khusus warga Musholla Nurul Iman.</p>
+          <div className="mb-2 flex items-center gap-2 text-xs font-bold tracking-[0.16em] text-secondary uppercase"><BookOpen size={15} /> Galeri Siswa </div>
+          <h1 className="text-3xl font-bold text-foreground">Manajemen Galeri Kelas</h1>
+          <p className="mt-1 max-w-xl text-sm text-muted-foreground">Kelola Galeri Kelas dan Utility </p>
         </div>
         {activeTab === "classes" && (
           <button type="button" onClick={openCreate} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/15 transition hover:-translate-y-0.5 hover:bg-primary/90">
-            <Plus size={18} /> Tambah Kelas
+            <Plus size={18} /> Tambah Galeri Kelas
           </button>
         )}
       </header>
@@ -447,13 +447,13 @@ export function AdminKelas() {
       {activeTab === "classes" && (
         <>
           <div className="flex w-fit gap-1 rounded-xl border border-border bg-muted p-1">
-            <button type="button" onClick={() => setViewMode("list")} className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${viewMode === "list" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>Daftar Materi</button>
+            <button type="button" onClick={() => setViewMode("list")} className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${viewMode === "list" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>Daftar Galeri</button>
             <button type="button" onClick={() => setViewMode("gallery")} className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${viewMode === "gallery" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}><ImageIcon size={15} /> Galeri Kelas</button>
           </div>
           {viewMode === "gallery" && (
             <section aria-label="Galeri Kelas">
               {isLoading ? <div className="py-12 text-center text-sm text-muted-foreground">Memuat galeri kelas...</div> : items.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-border bg-card px-6 py-16 text-center"><ImageIcon className="mx-auto mb-3 text-secondary" size={28} /><p className="text-sm text-muted-foreground">Belum ada kelas untuk ditampilkan.</p></div>
+                <div className="rounded-2xl border border-dashed border-border bg-card px-6 py-16 text-center"><ImageIcon className="mx-auto mb-3 text-secondary" size={28} /><p className="text-sm text-muted-foreground">Belum ada galeri kelas untuk ditampilkan.</p></div>
               ) : (
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                   {items.map((item) => {
@@ -481,7 +481,7 @@ export function AdminKelas() {
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                   <div>
-                    <label htmlFor="class-title" className="mb-2 block text-sm font-semibold">Judul Kelas</label>
+                    <label htmlFor="class-title" className="mb-2 block text-sm font-semibold">Judul Galeri</label>
                     <input id="class-title" type="text" value={formData.title} onChange={(event) => setFormData((current) => ({ ...current, title: event.target.value, slug: editingId === null ? slugify(event.target.value) : current.slug }))} className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10" required />
                   </div>
                   <div>
@@ -499,7 +499,7 @@ export function AdminKelas() {
                   <textarea id="class-excerpt" value={formData.excerpt} onChange={(event) => setFormData((current) => ({ ...current, excerpt: event.target.value }))} rows={3} className="w-full resize-none rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10" required />
                 </div>
                 <div>
-                  <label htmlFor="class-content" className="mb-2 block text-sm font-semibold">Konten Kelas (HTML)</label>
+                  <label htmlFor="class-content" className="mb-2 block text-sm font-semibold">Konten Galeri Kelas (HTML)</label>
                   <textarea id="class-content" value={formData.content} onChange={(event) => setFormData((current) => ({ ...current, content: event.target.value }))} rows={9} className="w-full rounded-xl border border-input bg-background px-4 py-3 font-mono text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10" required />
                 </div>
                  {editingId !== null && (
@@ -519,7 +519,7 @@ export function AdminKelas() {
                  )}
                  <label className="flex cursor-pointer items-center gap-3 border-t border-border pt-5 text-sm font-semibold">
                   <input type="checkbox" checked={formData.isPublished} onChange={(event) => setFormData((current) => ({ ...current, isPublished: event.target.checked }))} className="h-4 w-4 rounded border-input text-primary accent-primary" />
-                  Terbitkan kelas ini
+                  Terbitkan Galeri kelas ini
                 </label>
                 <div className="flex flex-col-reverse justify-end gap-3 border-t border-border pt-5 sm:flex-row">
                   <button type="button" onClick={closeForm} className="rounded-xl px-5 py-3 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-foreground">Batal</button>
@@ -573,7 +573,7 @@ export function AdminKelas() {
         <section className="max-w-2xl rounded-2xl border border-border bg-card p-5 shadow-sm md:p-8">
           <div className="mb-7 flex items-start gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-secondary/15 text-secondary"><LockKeyhole size={22} /></div>
-            <div><h2 className="text-2xl font-bold text-foreground">Pengaturan akses</h2><p className="mt-1 text-sm leading-6 text-muted-foreground">Atur identitas halaman Kelas dan password yang digunakan warga. Password tersimpan tidak ditampilkan.</p></div>
+            <div><h2 className="text-2xl font-bold text-foreground">Pengaturan akses</h2><p className="mt-1 text-sm leading-6 text-muted-foreground">Atur identitas halaman Galeri Kelas dan password yang digunakan untuk login . Password tersimpan tidak ditampilkan.</p></div>
           </div>
           {accessLoading ? <div className="space-y-4"><div className="h-12 animate-pulse rounded-xl bg-muted" /><div className="h-24 animate-pulse rounded-xl bg-muted" /><div className="h-12 animate-pulse rounded-xl bg-muted" /></div> : accessError ? (
             <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-5 text-sm text-destructive"><div className="flex items-center gap-2"><AlertCircle size={17} /> {accessError}</div><p className="mt-2 text-xs text-muted-foreground">Segarkan halaman untuk mencoba kembali.</p></div>

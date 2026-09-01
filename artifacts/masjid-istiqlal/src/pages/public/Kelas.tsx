@@ -160,7 +160,7 @@ export function Kelas() {
           <div className="pointer-events-none absolute -right-10 -top-16 h-52 w-52 rounded-full border border-secondary/20" />
           <div className="relative mx-auto max-w-6xl">
             <div className="mb-5 flex items-center gap-3 text-sm font-semibold tracking-[0.18em] text-secondary uppercase">
-              <span className="h-px w-10 bg-secondary" /> Ruang belajar warga
+              <span className="h-px w-10 bg-secondary" /> Ruang Galeri Siswa
             </div>
             <h1 className="max-w-3xl text-4xl font-bold leading-tight text-primary-foreground md:text-6xl">{pageTitle}</h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-primary-foreground/75 md:text-lg">{pageDescription}</p>
@@ -173,8 +173,8 @@ export function Kelas() {
               <LockKeyhole size={26} />
             </div>
             <p className="mb-2 text-xs font-bold tracking-[0.16em] text-secondary uppercase">Akses warga</p>
-            <h2 className="text-3xl font-bold">Materi untuk dipelajari bersama.</h2>
-            <p className="mt-3 text-sm leading-6 text-muted-foreground">Masukkan password warga untuk membuka kumpulan Kelas Musholla Nurul Iman.</p>
+            <h2 className="text-3xl font-bold">Galeri Bersama Siswa.</h2>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">Masukkan password untuk membuka kumpulan Galeri Kelas.</p>
 
             <form onSubmit={handleVerify} className="mt-7 space-y-4">
               <div>
@@ -227,7 +227,7 @@ export function Kelas() {
         <div className="relative mx-auto flex max-w-6xl items-end justify-between gap-6">
           <div>
             <div className="mb-4 flex items-center gap-3 text-sm font-semibold tracking-[0.18em] text-secondary uppercase">
-              <BookOpen size={17} /> Ruang belajar warga
+              <BookOpen size={17} /> Galeri Bersama Siswa
             </div>
             <h1 className="max-w-2xl text-4xl font-bold leading-tight text-primary-foreground md:text-6xl">{pageTitle}</h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-primary-foreground/75 md:text-lg">{pageDescription}</p>
@@ -252,7 +252,7 @@ export function Kelas() {
         ) : classesError ? (
           <div className="rounded-[1.5rem] border border-destructive/20 bg-destructive/5 px-6 py-16 text-center">
             <AlertCircle className="mx-auto mb-4 text-destructive" size={26} />
-            <h2 className="mb-2 text-xl font-bold">Materi belum dapat dimuat</h2>
+            <h2 className="mb-2 text-xl font-bold">Galeri belum dapat dimuat</h2>
             <p className="mb-5 text-sm text-muted-foreground">Periksa koneksi Anda, lalu coba lagi.</p>
             <button type="button" onClick={() => refetch()} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition hover:bg-primary/90">
               <RefreshCw size={16} /> Muat ulang
@@ -261,8 +261,8 @@ export function Kelas() {
         ) : publishedClasses.length === 0 ? (
           <div className="rounded-[1.5rem] border border-dashed border-border bg-card px-6 py-20 text-center">
             <BookOpen className="mx-auto mb-4 text-secondary" size={30} />
-            <h2 className="mb-2 text-2xl font-bold">Kelas sedang disiapkan</h2>
-            <p className="mx-auto max-w-md text-sm leading-6 text-muted-foreground">Belum ada materi yang diterbitkan. Silakan kembali lagi untuk menemukan kelas baru dari musholla.</p>
+            <h2 className="mb-2 text-2xl font-bold">Galeri Kelas sedang disiapkan</h2>
+            <p className="mx-auto max-w-md text-sm leading-6 text-muted-foreground">Belum ada Galeri Kelas yang diterbitkan. Silakan kembali lagi untuk menemukan Galeri baru.</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
