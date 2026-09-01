@@ -1,9 +1,8 @@
 import { useGetClassById, useGetClassGallery } from "@workspace/api-client-react";
 import { useRoute, Link } from "wouter";
-import { ArrowLeft, BookOpen, Calendar, Image as ImageIcon, User, X } from "lucide-react";
+import { ArrowLeft, BookOpen, Calendar, Image as ImageIcon, User, Video, X } from "lucide-react";
 import { useState } from "react";
-import { isGDriveUrl, toGDriveImageUrl, toGDrivePreviewUrl, toGDriveVideoUrl } from "@/lib/gdrive";
-import { MediaThumbnail } from "@/components/MediaThumbnail";
+import { toGDriveImageUrl } from "@/lib/gdrive";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 const SESSION_KEY = "kelas_access_granted";
@@ -11,12 +10,31 @@ const SESSION_KEY = "kelas_access_granted";
 function getMediaSrc(url: string | null | undefined, mediaType: "image" | "video" = "image") {
   if (!url) return null;
   if (url.startsWith("/api/storage")) return `${BASE}${url}`;
-  return mediaType === "video" ? toGDriveVideoUrl(url) : toGDriveImageUrl(url);
+  return toGDriveImageUrl(url);
 }
 
-function getMediaPoster(url: string | null | undefined, mediaType: "image" | "video") {
-  if (!url || mediaType !== "video" || url.startsWith("/api/storage")) return null;
-  return toGDriveImageUrl(url);
+function getYtId(url: string): string | null {
+  const match = url?.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  return match ? match[1] : null;
+}
+
+function isYoutubeShort(url: string) {
+  return url?.includes("/shorts/");
+}
+
+function isLocalVideo(url: string) {
+  return url?.startsWith("/api/storage") || url?.startsWith("blob:");
+}
+
+function getGDriveId(url: string): string | null {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    if (!parsed.hostname.includes("drive.google.com")) return null;
+    return parsed.searchParams.get("id") ?? parsed.pathname.match(/\/d\/([a-zA-Z0-9_-]+)/)?.[1] ?? null;
+  } catch {
+    return null;
+  }
 }
 
 export function KelasDetail() {
@@ -28,7 +46,7 @@ export function KelasDetail() {
   });
   const { data: gallery } = useGetClassGallery(id, { query: { enabled: hasAccess && id > 0 } });
   const activeGallery = Array.isArray(gallery) ? gallery.filter((photo) => photo.isActive) : [];
-  const [activeMedia, setActiveMedia] = useState<{ src: string; type: "image" | "video"; isExternalVideo?: boolean } | null>(null);
+  const [activeMedia, setActiveMedia] = useState<any | null>(null);
 
   if (!hasAccess) {
     return (
@@ -86,16 +104,54 @@ export function KelasDetail() {
         {activeGallery.length > 0 && (
           <section className="mt-14 border-t border-border pt-10">
             <div className="mb-6 flex items-center gap-3"><ImageIcon className="text-secondary" size={22} /><div><h2 className="text-2xl font-bold text-primary">Galeri Kelas</h2><p className="text-sm text-muted-foreground">Dokumentasi untuk materi ini</p></div></div>
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-              {activeGallery.map((photo) => <button key={photo.id} type="button" onClick={() => { const type = photo.mediaType === "video" ? "video" : "image"; const isExternalVideo = type === "video" && isGDriveUrl(photo.imageUrl); const src = isExternalVideo ? toGDrivePreviewUrl(photo.imageUrl) : getMediaSrc(photo.imageUrl, type); if (src) setActiveMedia({ src, type, isExternalVideo }); }} className="group relative aspect-square overflow-hidden rounded-2xl bg-muted text-left shadow-sm">
-                {photo.mediaType === "video" ? <MediaThumbnail src={getMediaSrc(photo.imageUrl, "video") ?? ""} title={photo.title} poster={getMediaPoster(photo.imageUrl, "video")} isExternalVideo={isGDriveUrl(photo.imageUrl)} className="transition duration-500 group-hover:scale-105" /> : <img src={getMediaSrc(photo.imageUrl, "image") ?? ""} alt={photo.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />}
-                <span className="sr-only">{photo.title}</span>
-              </button>)}
+            <div className="flex flex-wrap justify-center gap-5">
+              {activeGallery.map((photo) => {
+                const isVideo = photo.mediaType === "video";
+                const ytId = isVideo ? getYtId(photo.imageUrl) : null;
+                const gdriveId = isVideo ? getGDriveId(photo.imageUrl) : null;
+                const local = isVideo && isLocalVideo(photo.imageUrl);
+                const thumbUrl = ytId
+                  ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`
+                  : gdriveId
+                    ? `https://drive.google.com/thumbnail?id=${gdriveId}&sz=w1000`
+                    : null;
+                return (
+                  <button key={photo.id} type="button" onClick={() => setActiveMedia(photo)} className={`group flex flex-col text-left ${isVideo ? "w-[200px]" : "w-full sm:w-[calc(50%-10px)] md:w-[calc(33.333%-14px)]"}`}>
+                    <div className={`relative overflow-hidden rounded-2xl bg-gray-900 shadow-lg transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-2xl ${isVideo ? "h-[320px] w-[200px]" : "aspect-square"}`}>
+                      {isVideo ? local ? (
+                        <video src={`${BASE}${photo.imageUrl}`} className="absolute inset-0 h-full w-full object-cover" muted preload="metadata" />
+                      ) : thumbUrl ? (
+                        <img src={thumbUrl} alt={photo.title} className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center bg-gray-800"><Video size={40} className="text-white/30" /></div>
+                      ) : (
+                        <img src={getMediaSrc(photo.imageUrl, "image") ?? ""} alt={photo.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                      )}
+                      {isVideo && <><div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" /><div className="absolute inset-0 flex items-center justify-center"><span className="flex h-12 w-12 items-center justify-center rounded-full border border-white/40 bg-white/20 text-white backdrop-blur-sm"><span className="ml-1 h-0 w-0 border-y-[8px] border-l-[14px] border-y-transparent border-l-white" /></span></div></>}
+                    </div>
+                    <p className="mt-2.5 text-sm font-semibold leading-snug text-foreground">{photo.title || (isVideo ? "Video" : "Foto")}</p>
+                  </button>
+                );
+              })}
             </div>
           </section>
         )}
       </div>
-      {activeMedia && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4" onClick={() => setActiveMedia(null)}><div className="relative h-[min(85vh,720px)] w-full max-w-5xl" onClick={(event) => event.stopPropagation()}>{activeMedia.type === "video" ? activeMedia.isExternalVideo ? <iframe src={activeMedia.src} title="Video galeri kelas" className="h-full w-full rounded-2xl bg-black" allow="autoplay; fullscreen" allowFullScreen /> : <video src={activeMedia.src} controls autoPlay playsInline className="max-h-full max-w-full rounded-2xl object-contain" /> : <img src={activeMedia.src} alt="Foto galeri kelas" className="max-h-full max-w-full rounded-2xl object-contain" />}<button type="button" onClick={() => setActiveMedia(null)} className="absolute right-3 top-3 rounded-full bg-black/60 p-2 text-white"><X size={18} /></button></div></div>}
+      {activeMedia && (() => {
+        const activeYtId = getYtId(activeMedia.imageUrl);
+        const activeIsShort = isYoutubeShort(activeMedia.imageUrl);
+        const activeIsLocal = isLocalVideo(activeMedia.imageUrl);
+        const activeGDriveId = getGDriveId(activeMedia.imageUrl);
+        return <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.88)" }} onClick={() => setActiveMedia(null)}>
+          <div className={`relative ${activeIsShort || activeIsLocal ? "w-full max-w-xs" : "w-full max-w-3xl"}`} onClick={(event) => event.stopPropagation()}>
+            <button type="button" onClick={() => setActiveMedia(null)} className="absolute -top-10 right-0 flex items-center gap-1 text-sm text-white/80 transition-colors hover:text-white"><X size={20} /> Tutup</button>
+            {activeMedia.title && <p className="mb-3 line-clamp-1 text-lg font-semibold text-white">{activeMedia.title}</p>}
+            <div className="relative w-full overflow-hidden rounded-2xl bg-black shadow-2xl" style={{ paddingBottom: activeIsShort || activeIsLocal ? "177.78%" : "56.25%" }}>
+              {activeIsLocal ? <video className="absolute inset-0 h-full w-full" src={getMediaSrc(activeMedia.imageUrl, "video") ?? undefined} controls autoPlay playsInline /> : activeYtId ? <iframe className="absolute inset-0 h-full w-full" src={`https://www.youtube.com/embed/${activeYtId}?autoplay=1&rel=0`} title={activeMedia.title || "Video"} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen /> : activeGDriveId ? <iframe className="absolute inset-0 h-full w-full" src={`https://drive.google.com/file/d/${activeGDriveId}/preview`} title={activeMedia.title || "Video Google Drive"} allow="autoplay; fullscreen" allowFullScreen /> : <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gray-900 text-white"><p className="text-sm text-white/60">Tidak dapat memuat video</p><a href={activeMedia.imageUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-white/80 underline hover:text-white">Buka di tab baru</a></div>}
+            </div>
+          </div>
+        </div>;
+      })()}
     </article>
   );
 }

@@ -14,11 +14,10 @@ import {
 } from "@workspace/api-client-react";
 import type { Class as ClassItem, ClassGalleryItem } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { AlertCircle, BookOpen, Clock3, Edit2, Eye, EyeOff, Image as ImageIcon, LockKeyhole, Plus, Save, Settings2, Trash2, X } from "lucide-react";
-import { isGDriveUrl, toGDriveImageUrl, toGDriveVideoUrl } from "@/lib/gdrive";
+import { AlertCircle, BookOpen, Clock3, Edit2, Eye, EyeOff, Image as ImageIcon, LockKeyhole, Plus, Save, Settings2, Trash2, Video, X } from "lucide-react";
+import { toGDriveImageUrl } from "@/lib/gdrive";
 import { useToast } from "@/hooks/use-toast";
 import { MediaUploadInput } from "@/components/MediaUploadInput";
-import { MediaThumbnail } from "@/components/MediaThumbnail";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -74,15 +73,30 @@ function slugify(value: string) {
   return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
 }
 
-function getClassMedia(url: string | null | undefined, mediaType: "image" | "video" = "image") {
+function getClassMedia(url: string | null | undefined) {
   if (!url) return null;
   if (url.startsWith("/api/storage")) return `${BASE}${url}`;
-  return mediaType === "video" ? toGDriveVideoUrl(url) : toGDriveImageUrl(url);
+  return toGDriveImageUrl(url);
 }
 
-function getClassMediaPoster(url: string | null | undefined, mediaType: "image" | "video") {
-  if (!url || mediaType !== "video" || url.startsWith("/api/storage") || !isGDriveUrl(url)) return null;
-  return toGDriveImageUrl(url);
+function getYtId(url: string): string | null {
+  const match = url?.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  return match ? match[1] : null;
+}
+
+function isLocalVideo(url: string) {
+  return url?.startsWith("/api/storage") || url?.startsWith("blob:");
+}
+
+function getGDriveId(url: string): string | null {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    if (!parsed.hostname.includes("drive.google.com")) return null;
+    return parsed.searchParams.get("id") ?? parsed.pathname.match(/\/d\/([a-zA-Z0-9_-]+)/)?.[1] ?? null;
+  } catch {
+    return null;
+  }
 }
 
 function ClassGalleryPanel({
@@ -144,11 +158,20 @@ function ClassGalleryPanel({
       </div>
       {isLoading ? <div className="py-8 text-center text-sm text-muted-foreground">Memuat foto galeri...</div> : items && items.length > 0 ? (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {items.map((photo) => {
-             const src = getClassMedia(photo.imageUrl, photo.mediaType === "video" ? "video" : "image");
+           {items.map((photo) => {
+              const src = getClassMedia(photo.imageUrl);
+              const ytId = photo.mediaType === "video" ? getYtId(photo.imageUrl) : null;
+              const gdriveId = photo.mediaType === "video" ? getGDriveId(photo.imageUrl) : null;
+              const localVideo = photo.mediaType === "video" && isLocalVideo(photo.imageUrl);
             return (
-              <div key={photo.id} className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-muted">
-                {src ? photo.mediaType === "video" ? <MediaThumbnail src={src} title={photo.title} poster={getClassMediaPoster(photo.imageUrl, "video")} isExternalVideo={isGDriveUrl(photo.imageUrl)} /> : <img src={src} alt={photo.title} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center"><ImageIcon className="text-muted-foreground/50" size={26} /></div>}
+               <div key={photo.id} className={`group relative ${photo.mediaType === "video" ? "aspect-[5/8]" : "aspect-square"} overflow-hidden rounded-xl border border-border bg-muted`}>
+                 {photo.mediaType === "video" ? (
+                   localVideo ? <video src={`${BASE}${photo.imageUrl}`} className="h-full w-full object-cover" muted preload="metadata" /> :
+                   ytId ? <img src={`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`} alt={photo.title} className="h-full w-full object-cover" /> :
+                   gdriveId ? <img src={`https://drive.google.com/thumbnail?id=${gdriveId}&sz=w1000`} alt={photo.title} className="h-full w-full object-cover" /> :
+                   <div className="flex h-full items-center justify-center text-muted-foreground"><Video size={30} /></div>
+                 ) : src ? <img src={src} alt={photo.title} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center"><ImageIcon className="text-muted-foreground/50" size={26} /></div>}
+                 {photo.mediaType === "video" && <div className="pointer-events-none absolute inset-0 flex items-center justify-center"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white"><span className="ml-1 h-0 w-0 border-y-[7px] border-l-[11px] border-y-transparent border-l-white" /></span></div>}
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent p-3 pt-8">
                   <p className="truncate text-sm font-semibold text-white">{photo.title}</p>
                   <div className="mt-2 flex gap-1.5">
