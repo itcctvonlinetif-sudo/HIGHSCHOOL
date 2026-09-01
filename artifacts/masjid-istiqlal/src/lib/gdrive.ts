@@ -1,55 +1,50 @@
-/**
- * Converts any Google Drive URL to a directly embeddable image URL.
- * Handles formats:
- *   - https://drive.google.com/uc?id=FILE_ID&export=view  (old format, often blocked)
- *   - https://drive.google.com/file/d/FILE_ID/view
- *   - https://drive.google.com/open?id=FILE_ID
- * Returns the thumbnail URL format which works reliably for public files.
- */
-export function toGDriveImageUrl(url: string): string {
-  if (!url) return url;
+function getGDriveFileId(url: string): string | null {
+  if (!url) return null;
 
   try {
     const parsed = new URL(url);
-    if (!parsed.hostname.includes("drive.google.com") && !parsed.hostname.includes("docs.google.com")) {
-      return url;
+    if (
+      !parsed.hostname.includes("drive.google.com") &&
+      !parsed.hostname.includes("docs.google.com")
+    ) {
+      return null;
     }
 
-    let fileId: string | null = null;
-
-    const idParam = parsed.searchParams.get("id");
-    if (idParam) {
-      fileId = idParam;
-    }
-
-    if (!fileId) {
-      const match = parsed.pathname.match(/\/d\/([a-zA-Z0-9_-]+)/);
-      if (match) fileId = match[1];
-    }
-
-    if (fileId) {
-      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
-    }
+    return (
+      parsed.searchParams.get("id") ??
+      parsed.pathname.match(/\/d\/([a-zA-Z0-9_-]+)/)?.[1] ??
+      null
+    );
   } catch {
+    return null;
   }
+}
 
-  return url;
+export function isGDriveUrl(url: string | null | undefined): boolean {
+  return !!url && !!getGDriveFileId(url);
+}
+
+/**
+ * Converts any Google Drive URL to a thumbnail URL.
+ * This works for both images and videos when the file is shared publicly.
+ */
+export function toGDriveImageUrl(url: string): string {
+  const fileId = getGDriveFileId(url);
+  return fileId
+    ? `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w1000`
+    : url;
 }
 
 export function toGDriveVideoUrl(url: string): string {
-  if (!url) return url;
+  const fileId = getGDriveFileId(url);
+  return fileId
+    ? `https://drive.google.com/uc?export=download&id=${encodeURIComponent(fileId)}`
+    : url;
+}
 
-  try {
-    const parsed = new URL(url);
-    if (!parsed.hostname.includes("drive.google.com") && !parsed.hostname.includes("docs.google.com")) {
-      return url;
-    }
-
-    const fileId = parsed.searchParams.get("id") ?? parsed.pathname.match(/\/d\/([a-zA-Z0-9_-]+)/)?.[1];
-    return fileId
-      ? `https://drive.google.com/uc?export=download&id=${encodeURIComponent(fileId)}`
-      : url;
-  } catch {
-    return url;
-  }
+export function toGDrivePreviewUrl(url: string): string {
+  const fileId = getGDriveFileId(url);
+  return fileId
+    ? `https://drive.google.com/file/d/${encodeURIComponent(fileId)}/preview`
+    : url;
 }

@@ -2,7 +2,7 @@ import { useGetClassById, useGetClassGallery } from "@workspace/api-client-react
 import { useRoute, Link } from "wouter";
 import { ArrowLeft, BookOpen, Calendar, Image as ImageIcon, User, X } from "lucide-react";
 import { useState } from "react";
-import { toGDriveImageUrl, toGDriveVideoUrl } from "@/lib/gdrive";
+import { isGDriveUrl, toGDriveImageUrl, toGDrivePreviewUrl, toGDriveVideoUrl } from "@/lib/gdrive";
 import { MediaThumbnail } from "@/components/MediaThumbnail";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -28,7 +28,7 @@ export function KelasDetail() {
   });
   const { data: gallery } = useGetClassGallery(id, { query: { enabled: hasAccess && id > 0 } });
   const activeGallery = Array.isArray(gallery) ? gallery.filter((photo) => photo.isActive) : [];
-  const [activeMedia, setActiveMedia] = useState<{ src: string; type: "image" | "video" } | null>(null);
+  const [activeMedia, setActiveMedia] = useState<{ src: string; type: "image" | "video"; isExternalVideo?: boolean } | null>(null);
 
   if (!hasAccess) {
     return (
@@ -86,16 +86,16 @@ export function KelasDetail() {
         {activeGallery.length > 0 && (
           <section className="mt-14 border-t border-border pt-10">
             <div className="mb-6 flex items-center gap-3"><ImageIcon className="text-secondary" size={22} /><div><h2 className="text-2xl font-bold text-primary">Galeri Kelas</h2><p className="text-sm text-muted-foreground">Dokumentasi untuk materi ini</p></div></div>
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-              {activeGallery.map((photo) => <button key={photo.id} type="button" onClick={() => { const type = photo.mediaType === "video" ? "video" : "image"; const src = getMediaSrc(photo.imageUrl, type); if (src) setActiveMedia({ src, type }); }} className="group relative aspect-square overflow-hidden rounded-2xl bg-muted text-left shadow-sm">
-                {photo.mediaType === "video" ? <MediaThumbnail src={getMediaSrc(photo.imageUrl, "video") ?? ""} title={photo.title} poster={getMediaPoster(photo.imageUrl, "video")} className="transition duration-500 group-hover:scale-105" /> : <img src={getMediaSrc(photo.imageUrl, "image") ?? ""} alt={photo.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />}
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+              {activeGallery.map((photo) => <button key={photo.id} type="button" onClick={() => { const type = photo.mediaType === "video" ? "video" : "image"; const isExternalVideo = type === "video" && isGDriveUrl(photo.imageUrl); const src = isExternalVideo ? toGDrivePreviewUrl(photo.imageUrl) : getMediaSrc(photo.imageUrl, type); if (src) setActiveMedia({ src, type, isExternalVideo }); }} className="group relative aspect-square overflow-hidden rounded-2xl bg-muted text-left shadow-sm">
+                {photo.mediaType === "video" ? <MediaThumbnail src={getMediaSrc(photo.imageUrl, "video") ?? ""} title={photo.title} poster={getMediaPoster(photo.imageUrl, "video")} isExternalVideo={isGDriveUrl(photo.imageUrl)} className="transition duration-500 group-hover:scale-105" /> : <img src={getMediaSrc(photo.imageUrl, "image") ?? ""} alt={photo.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />}
                 <span className="sr-only">{photo.title}</span>
               </button>)}
             </div>
           </section>
         )}
       </div>
-      {activeMedia && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4" onClick={() => setActiveMedia(null)}><div className="relative max-h-[90vh] max-w-5xl" onClick={(event) => event.stopPropagation()}>{activeMedia.type === "video" ? <video src={activeMedia.src} controls autoPlay className="max-h-[85vh] max-w-full rounded-2xl object-contain" /> : <img src={activeMedia.src} alt="Foto galeri kelas" className="max-h-[85vh] max-w-full rounded-2xl object-contain" />}<button type="button" onClick={() => setActiveMedia(null)} className="absolute right-3 top-3 rounded-full bg-black/60 p-2 text-white"><X size={18} /></button></div></div>}
+      {activeMedia && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4" onClick={() => setActiveMedia(null)}><div className="relative h-[min(85vh,720px)] w-full max-w-5xl" onClick={(event) => event.stopPropagation()}>{activeMedia.type === "video" ? activeMedia.isExternalVideo ? <iframe src={activeMedia.src} title="Video galeri kelas" className="h-full w-full rounded-2xl bg-black" allow="autoplay; fullscreen" allowFullScreen /> : <video src={activeMedia.src} controls autoPlay playsInline className="max-h-full max-w-full rounded-2xl object-contain" /> : <img src={activeMedia.src} alt="Foto galeri kelas" className="max-h-full max-w-full rounded-2xl object-contain" />}<button type="button" onClick={() => setActiveMedia(null)} className="absolute right-3 top-3 rounded-full bg-black/60 p-2 text-white"><X size={18} /></button></div></div>}
     </article>
   );
 }

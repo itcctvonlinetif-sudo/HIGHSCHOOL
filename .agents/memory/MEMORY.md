@@ -1,0 +1,1 @@
+- [Google Drive video playback](google-drive-video.md) — use Drive thumbnails and Preview embeds instead of relying on direct download URLs.
