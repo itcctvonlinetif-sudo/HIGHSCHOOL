@@ -35,3 +35,21 @@ export function toGDriveImageUrl(url: string): string {
 
   return url;
 }
+
+export function toGDriveVideoUrl(url: string): string {
+  if (!url) return url;
+
+  try {
+    const parsed = new URL(url);
+    if (!parsed.hostname.includes("drive.google.com") && !parsed.hostname.includes("docs.google.com")) {
+      return url;
+    }
+
+    const fileId = parsed.searchParams.get("id") ?? parsed.pathname.match(/\/d\/([a-zA-Z0-9_-]+)/)?.[1];
+    return fileId
+      ? `https://drive.google.com/uc?export=download&id=${encodeURIComponent(fileId)}`
+      : url;
+  } catch {
+    return url;
+  }
+}

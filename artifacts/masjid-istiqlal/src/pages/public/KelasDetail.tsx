@@ -2,7 +2,8 @@ import { useGetClassById, useGetClassGallery } from "@workspace/api-client-react
 import { useRoute, Link } from "wouter";
 import { ArrowLeft, BookOpen, Calendar, Image as ImageIcon, User, X } from "lucide-react";
 import { useState } from "react";
-import { toGDriveImageUrl } from "@/lib/gdrive";
+import { toGDriveImageUrl, toGDriveVideoUrl } from "@/lib/gdrive";
+import { MediaThumbnail } from "@/components/MediaThumbnail";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 const SESSION_KEY = "kelas_access_granted";
@@ -10,7 +11,12 @@ const SESSION_KEY = "kelas_access_granted";
 function getMediaSrc(url: string | null | undefined, mediaType: "image" | "video" = "image") {
   if (!url) return null;
   if (url.startsWith("/api/storage")) return `${BASE}${url}`;
-  return mediaType === "video" ? url : toGDriveImageUrl(url);
+  return mediaType === "video" ? toGDriveVideoUrl(url) : toGDriveImageUrl(url);
+}
+
+function getMediaPoster(url: string | null | undefined, mediaType: "image" | "video") {
+  if (!url || mediaType !== "video" || url.startsWith("/api/storage")) return null;
+  return toGDriveImageUrl(url);
 }
 
 export function KelasDetail() {
@@ -82,8 +88,7 @@ export function KelasDetail() {
             <div className="mb-6 flex items-center gap-3"><ImageIcon className="text-secondary" size={22} /><div><h2 className="text-2xl font-bold text-primary">Galeri Kelas</h2><p className="text-sm text-muted-foreground">Dokumentasi untuk materi ini</p></div></div>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
               {activeGallery.map((photo) => <button key={photo.id} type="button" onClick={() => { const type = photo.mediaType === "video" ? "video" : "image"; const src = getMediaSrc(photo.imageUrl, type); if (src) setActiveMedia({ src, type }); }} className="group relative aspect-square overflow-hidden rounded-2xl bg-muted text-left shadow-sm">
-                {photo.mediaType === "video" ? <video src={getMediaSrc(photo.imageUrl, "video") ?? undefined} aria-label={photo.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" muted playsInline /> : <img src={getMediaSrc(photo.imageUrl, "image") ?? ""} alt={photo.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />}
-                {photo.mediaType === "video" && <span className="pointer-events-none absolute inset-0 flex items-center justify-center"><span className="rounded-full bg-black/60 px-3 py-2 text-xs font-bold text-white">Video</span></span>}
+                {photo.mediaType === "video" ? <MediaThumbnail src={getMediaSrc(photo.imageUrl, "video") ?? ""} title={photo.title} poster={getMediaPoster(photo.imageUrl, "video")} className="transition duration-500 group-hover:scale-105" /> : <img src={getMediaSrc(photo.imageUrl, "image") ?? ""} alt={photo.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />}
                 <span className="sr-only">{photo.title}</span>
               </button>)}
             </div>

@@ -15,9 +15,10 @@ import {
 import type { Class as ClassItem, ClassGalleryItem } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, BookOpen, Clock3, Edit2, Eye, EyeOff, Image as ImageIcon, LockKeyhole, Plus, Save, Settings2, Trash2, X } from "lucide-react";
-import { toGDriveImageUrl } from "@/lib/gdrive";
+import { toGDriveImageUrl, toGDriveVideoUrl } from "@/lib/gdrive";
 import { useToast } from "@/hooks/use-toast";
 import { MediaUploadInput } from "@/components/MediaUploadInput";
+import { MediaThumbnail } from "@/components/MediaThumbnail";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -76,7 +77,12 @@ function slugify(value: string) {
 function getClassMedia(url: string | null | undefined, mediaType: "image" | "video" = "image") {
   if (!url) return null;
   if (url.startsWith("/api/storage")) return `${BASE}${url}`;
-  return mediaType === "video" ? url : toGDriveImageUrl(url);
+  return mediaType === "video" ? toGDriveVideoUrl(url) : toGDriveImageUrl(url);
+}
+
+function getClassMediaPoster(url: string | null | undefined, mediaType: "image" | "video") {
+  if (!url || mediaType !== "video" || url.startsWith("/api/storage")) return null;
+  return toGDriveImageUrl(url);
 }
 
 function ClassGalleryPanel({
@@ -142,7 +148,7 @@ function ClassGalleryPanel({
              const src = getClassMedia(photo.imageUrl, photo.mediaType === "video" ? "video" : "image");
             return (
               <div key={photo.id} className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-muted">
-                {src ? photo.mediaType === "video" ? <video src={src} aria-label={photo.title} className="h-full w-full object-cover" muted playsInline /> : <img src={src} alt={photo.title} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center"><ImageIcon className="text-muted-foreground/50" size={26} /></div>}
+                {src ? photo.mediaType === "video" ? <MediaThumbnail src={src} title={photo.title} poster={getClassMediaPoster(photo.imageUrl, "video")} /> : <img src={src} alt={photo.title} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center"><ImageIcon className="text-muted-foreground/50" size={26} /></div>}
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent p-3 pt-8">
                   <p className="truncate text-sm font-semibold text-white">{photo.title}</p>
                   <div className="mt-2 flex gap-1.5">

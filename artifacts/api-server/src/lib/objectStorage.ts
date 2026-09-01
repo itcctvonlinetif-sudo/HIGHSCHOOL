@@ -87,23 +87,48 @@ export class ObjectStorageService {
     return null;
   }
 
-  async downloadObject(file: File, cacheTtlSec: number = 3600): Promise<Response> {
+  async downloadObject(
+    file: File,
+    cacheTtlSec: number = 3600,
+    rangeHeader?: string,
+  ): Promise<Response> {
     const [metadata] = await file.getMetadata();
     const aclPolicy = await getObjectAclPolicy(file);
     const isPublic = aclPolicy?.visibility === "public";
 
-    const nodeStream = file.createReadStream();
+    const size = Number(metadata.size ?? 0);
+    const range = parseByteRange(rangeHeader, size);
+    if (range === "invalid") {
+      return new Response(null, {
+        status: 416,
+        headers: {
+          "Accept-Ranges": "bytes",
+          "Content-Range": `bytes */${size}`,
+        },
+      });
+    }
+
+    const nodeStream = range
+      ? file.createReadStream({ start: range.start, end: range.end })
+      : file.createReadStream();
     const webStream = Readable.toWeb(nodeStream) as ReadableStream;
 
     const headers: Record<string, string> = {
       "Content-Type": (metadata.contentType as string) || "application/octet-stream",
       "Cache-Control": `${isPublic ? "public" : "private"}, max-age=${cacheTtlSec}`,
+      "Accept-Ranges": "bytes",
     };
-    if (metadata.size) {
-      headers["Content-Length"] = String(metadata.size);
+    if (range) {
+      headers["Content-Length"] = String(range.end - range.start + 1);
+      headers["Content-Range"] = `bytes ${range.start}-${range.end}/${size}`;
+    } else if (metadata.size) {
+      headers["Content-Length"] = String(size);
     }
 
-    return new Response(webStream, { headers });
+    return new Response(webStream, {
+      status: range ? 206 : 200,
+      headers,
+    });
   }
 
   async getObjectEntityUploadURL(): Promise<string> {
@@ -204,6 +229,30 @@ export class ObjectStorageService {
       requestedPermission: requestedPermission ?? ObjectPermission.READ,
     });
   }
+}
+
+function parseByteRange(
+  rangeHeader: string | undefined,
+  size: number,
+): { start: number; end: number } | null | "invalid" {
+  if (!rangeHeader) return null;
+  if (!Number.isFinite(size) || size <= 0) return "invalid";
+
+  const match = rangeHeader.match(/^bytes=(\d*)-(\d*)$/);
+  if (!match) return "invalid";
+
+  const [, startText, endText] = match;
+  if (!startText && !endText) return "invalid";
+
+  let start = startText ? Number(startText) : size - Number(endText);
+  let end = endText ? Number(endText) : size - 1;
+
+  if (!Number.isInteger(start) || !Number.isInteger(end)) return "invalid";
+  if (!startText) start = Math.max(0, start);
+  if (start < 0 || start >= size || end < start) return "invalid";
+
+  end = Math.min(end, size - 1);
+  return { start, end };
 }
 
 function parseObjectPath(path: string): {
