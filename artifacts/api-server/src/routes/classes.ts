@@ -86,12 +86,13 @@ router.get("/classes/:id/gallery", async (req, res) => {
 router.post("/classes/:id/gallery", async (req, res) => {
   try {
     const classId = parseInt(req.params.id, 10);
-    const { title, imageUrl, isActive } = req.body;
+    const { title, imageUrl, mediaType, isActive } = req.body;
     if (!title || !imageUrl) return res.status(400).json({ error: "Title and image URL are required" });
     const [item] = await db.insert(classGalleryTable).values({
       classId,
       title,
       imageUrl,
+      mediaType: mediaType === "video" ? "video" : "image",
       isActive: isActive ?? true,
     }).returning();
     res.status(201).json(item);
@@ -105,10 +106,10 @@ router.put("/classes/:classId/gallery/:id", async (req, res) => {
   try {
     const classId = parseInt(req.params.classId, 10);
     const id = parseInt(req.params.id, 10);
-    const { title, imageUrl, isActive } = req.body;
+    const { title, imageUrl, mediaType, isActive } = req.body;
     if (!title || !imageUrl) return res.status(400).json({ error: "Title and image URL are required" });
     const [item] = await db.update(classGalleryTable)
-      .set({ title, imageUrl, isActive: isActive ?? true })
+      .set({ title, imageUrl, mediaType: mediaType === "video" ? "video" : "image", isActive: isActive ?? true })
       .where(and(eq(classGalleryTable.id, id), eq(classGalleryTable.classId, classId)))
       .returning();
     if (!item) return res.status(404).json({ error: "Class gallery item not found" });

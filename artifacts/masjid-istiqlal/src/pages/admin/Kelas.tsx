@@ -41,6 +41,7 @@ interface AccessForm {
 interface GalleryForm {
   title: string;
   imageUrl: string;
+  mediaType: "image" | "video";
   isActive: boolean;
 }
 
@@ -64,6 +65,7 @@ const defaultAccessForm: AccessForm = {
 const defaultGalleryForm: GalleryForm = {
   title: "",
   imageUrl: "",
+  mediaType: "image",
   isActive: true,
 };
 
@@ -71,10 +73,10 @@ function slugify(value: string) {
   return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
 }
 
-function getClassImage(url: string | null | undefined) {
+function getClassMedia(url: string | null | undefined, mediaType: "image" | "video" = "image") {
   if (!url) return null;
   if (url.startsWith("/api/storage")) return `${BASE}${url}`;
-  return toGDriveImageUrl(url);
+  return mediaType === "video" ? url : toGDriveImageUrl(url);
 }
 
 function ClassGalleryPanel({
@@ -112,7 +114,7 @@ function ClassGalleryPanel({
                      <div className="rounded-xl border border-border bg-muted/30 p-4">
         <div className="grid gap-4 md:grid-cols-2">
           <div>
-            <label htmlFor="gallery-title" className="mb-2 block text-sm font-semibold">Judul foto</label>
+            <label htmlFor="gallery-title" className="mb-2 block text-sm font-semibold">Judul media</label>
             <input id="gallery-title" type="text" value={form.title} onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))} placeholder="Contoh: Sesi pembukaan" className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10" required />
           </div>
           <label className="flex cursor-pointer items-end gap-3 pb-3 text-sm font-semibold">
@@ -121,7 +123,12 @@ function ClassGalleryPanel({
           </label>
         </div>
         <div className="mt-4">
-          <MediaUploadInput label="Sumber foto" value={form.imageUrl} onChange={(imageUrl) => setForm((current) => ({ ...current, imageUrl }))} accept="image/*" placeholder="https://... atau link Google Drive" />
+          <label htmlFor="gallery-media-type" className="mb-2 block text-sm font-semibold">Jenis media</label>
+          <select id="gallery-media-type" value={form.mediaType} onChange={(event) => setForm((current) => ({ ...current, mediaType: event.target.value as GalleryForm["mediaType"] }))} className="mb-3 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10">
+            <option value="image">Foto</option>
+            <option value="video">Video</option>
+          </select>
+          <MediaUploadInput label="Sumber media" value={form.imageUrl} onChange={(imageUrl) => setForm((current) => ({ ...current, imageUrl }))} onMediaTypeChange={(mediaType) => setForm((current) => ({ ...current, mediaType }))} accept="image/*,video/*" placeholder="https://... atau link Google Drive" />
         </div>
         <div className="mt-4 flex justify-end">
           <button type="button" onClick={onAdd} disabled={isSaving || !form.imageUrl || !form.title.trim()} className="inline-flex items-center gap-2 rounded-xl bg-secondary px-4 py-2.5 text-sm font-bold text-secondary-foreground transition hover:bg-secondary/90 disabled:cursor-not-allowed disabled:opacity-60">
@@ -132,10 +139,10 @@ function ClassGalleryPanel({
       {isLoading ? <div className="py-8 text-center text-sm text-muted-foreground">Memuat foto galeri...</div> : items && items.length > 0 ? (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {items.map((photo) => {
-            const src = getClassImage(photo.imageUrl);
+             const src = getClassMedia(photo.imageUrl, photo.mediaType === "video" ? "video" : "image");
             return (
               <div key={photo.id} className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-muted">
-                {src ? <img src={src} alt={photo.title} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center"><ImageIcon className="text-muted-foreground/50" size={26} /></div>}
+                {src ? photo.mediaType === "video" ? <video src={src} aria-label={photo.title} className="h-full w-full object-cover" muted playsInline /> : <img src={src} alt={photo.title} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center"><ImageIcon className="text-muted-foreground/50" size={26} /></div>}
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent p-3 pt-8">
                   <p className="truncate text-sm font-semibold text-white">{photo.title}</p>
                   <div className="mt-2 flex gap-1.5">
@@ -314,14 +321,14 @@ export function AdminKelas() {
 
   const handleGalleryAdd = () => {
     if (editingId === null || !galleryForm.title.trim() || !galleryForm.imageUrl.trim()) return;
-    const data = { title: galleryForm.title.trim(), imageUrl: galleryForm.imageUrl.trim(), isActive: galleryForm.isActive };
+    const data = { title: galleryForm.title.trim(), imageUrl: galleryForm.imageUrl.trim(), mediaType: galleryForm.mediaType, isActive: galleryForm.isActive };
     if (editingGalleryId !== null) updateGalleryMutation.mutate({ classId: editingId, id: editingGalleryId, data });
     else createGalleryMutation.mutate({ id: editingId, data });
   };
 
   const handleGalleryEdit = (photo: ClassGalleryItem) => {
     setEditingGalleryId(photo.id);
-    setGalleryForm({ title: photo.title, imageUrl: photo.imageUrl, isActive: photo.isActive });
+    setGalleryForm({ title: photo.title, imageUrl: photo.imageUrl, mediaType: photo.mediaType === "video" ? "video" : "image", isActive: photo.isActive });
   };
 
   const handleSaveAccess = async (event: FormEvent<HTMLFormElement>) => {

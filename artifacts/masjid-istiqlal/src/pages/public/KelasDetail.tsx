@@ -7,10 +7,10 @@ import { toGDriveImageUrl } from "@/lib/gdrive";
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 const SESSION_KEY = "kelas_access_granted";
 
-function getMediaSrc(url: string | null | undefined) {
+function getMediaSrc(url: string | null | undefined, mediaType: "image" | "video" = "image") {
   if (!url) return null;
   if (url.startsWith("/api/storage")) return `${BASE}${url}`;
-  return toGDriveImageUrl(url);
+  return mediaType === "video" ? url : toGDriveImageUrl(url);
 }
 
 export function KelasDetail() {
@@ -22,7 +22,7 @@ export function KelasDetail() {
   });
   const { data: gallery } = useGetClassGallery(id, { query: { enabled: hasAccess && id > 0 } });
   const activeGallery = Array.isArray(gallery) ? gallery.filter((photo) => photo.isActive) : [];
-  const [activeImage, setActiveImage] = useState<string | null>(null);
+  const [activeMedia, setActiveMedia] = useState<{ src: string; type: "image" | "video" } | null>(null);
 
   if (!hasAccess) {
     return (
@@ -81,15 +81,16 @@ export function KelasDetail() {
           <section className="mt-14 border-t border-border pt-10">
             <div className="mb-6 flex items-center gap-3"><ImageIcon className="text-secondary" size={22} /><div><h2 className="text-2xl font-bold text-primary">Galeri Kelas</h2><p className="text-sm text-muted-foreground">Dokumentasi untuk materi ini</p></div></div>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-              {activeGallery.map((photo) => <button key={photo.id} type="button" onClick={() => setActiveImage(getMediaSrc(photo.imageUrl))} className="group aspect-square overflow-hidden rounded-2xl bg-muted text-left shadow-sm">
-                <img src={getMediaSrc(photo.imageUrl) ?? ""} alt={photo.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+              {activeGallery.map((photo) => <button key={photo.id} type="button" onClick={() => { const type = photo.mediaType === "video" ? "video" : "image"; const src = getMediaSrc(photo.imageUrl, type); if (src) setActiveMedia({ src, type }); }} className="group relative aspect-square overflow-hidden rounded-2xl bg-muted text-left shadow-sm">
+                {photo.mediaType === "video" ? <video src={getMediaSrc(photo.imageUrl, "video") ?? undefined} aria-label={photo.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" muted playsInline /> : <img src={getMediaSrc(photo.imageUrl, "image") ?? ""} alt={photo.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />}
+                {photo.mediaType === "video" && <span className="pointer-events-none absolute inset-0 flex items-center justify-center"><span className="rounded-full bg-black/60 px-3 py-2 text-xs font-bold text-white">Video</span></span>}
                 <span className="sr-only">{photo.title}</span>
               </button>)}
             </div>
           </section>
         )}
       </div>
-      {activeImage && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4" onClick={() => setActiveImage(null)}><div className="relative max-h-[90vh] max-w-5xl" onClick={(event) => event.stopPropagation()}><img src={activeImage} alt="Foto galeri kelas" className="max-h-[85vh] max-w-full rounded-2xl object-contain" /><button type="button" onClick={() => setActiveImage(null)} className="absolute right-3 top-3 rounded-full bg-black/60 p-2 text-white"><X size={18} /></button></div></div>}
+      {activeMedia && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4" onClick={() => setActiveMedia(null)}><div className="relative max-h-[90vh] max-w-5xl" onClick={(event) => event.stopPropagation()}>{activeMedia.type === "video" ? <video src={activeMedia.src} controls autoPlay className="max-h-[85vh] max-w-full rounded-2xl object-contain" /> : <img src={activeMedia.src} alt="Foto galeri kelas" className="max-h-[85vh] max-w-full rounded-2xl object-contain" />}<button type="button" onClick={() => setActiveMedia(null)} className="absolute right-3 top-3 rounded-full bg-black/60 p-2 text-white"><X size={18} /></button></div></div>}
     </article>
   );
 }

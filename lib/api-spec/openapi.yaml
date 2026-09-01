@@ -1151,6 +1151,9 @@ components:
           type: string
         imageUrl:
           type: string
+        mediaType:
+          type: string
+          enum: [image, video]
         isActive:
           type: boolean
         createdAt:
@@ -1170,6 +1173,9 @@ components:
           type: string
         imageUrl:
           type: string
+        mediaType:
+          type: string
+          enum: [image, video]
         isActive:
           type: boolean
       required:

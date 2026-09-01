@@ -365,6 +365,7 @@ export const GetClassGalleryResponseItem = zod.object({
   classId: zod.number(),
   title: zod.string(),
   imageUrl: zod.string(),
+  mediaType: zod.enum(["image", "video"]).optional(),
   isActive: zod.boolean(),
   createdAt: zod.string(),
 });
@@ -380,6 +381,7 @@ export const CreateClassGalleryItemParams = zod.object({
 export const CreateClassGalleryItemBody = zod.object({
   title: zod.string(),
   imageUrl: zod.string(),
+  mediaType: zod.enum(["image", "video"]).optional(),
   isActive: zod.boolean(),
 });
 
@@ -394,6 +396,7 @@ export const UpdateClassGalleryItemParams = zod.object({
 export const UpdateClassGalleryItemBody = zod.object({
   title: zod.string(),
   imageUrl: zod.string(),
+  mediaType: zod.enum(["image", "video"]).optional(),
   isActive: zod.boolean(),
 });
 
@@ -402,6 +405,7 @@ export const UpdateClassGalleryItemResponse = zod.object({
   classId: zod.number(),
   title: zod.string(),
   imageUrl: zod.string(),
+  mediaType: zod.enum(["image", "video"]).optional(),
   isActive: zod.boolean(),
   createdAt: zod.string(),
 });

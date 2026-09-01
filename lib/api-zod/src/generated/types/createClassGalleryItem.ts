@@ -5,9 +5,11 @@
  * Musholla Nurul Iman API
  * OpenAPI spec version: 0.1.0
  */
+import type { CreateClassGalleryItemMediaType } from "./createClassGalleryItemMediaType";
 
 export interface CreateClassGalleryItem {
   title: string;
   imageUrl: string;
+  mediaType?: CreateClassGalleryItemMediaType;
   isActive: boolean;
 }

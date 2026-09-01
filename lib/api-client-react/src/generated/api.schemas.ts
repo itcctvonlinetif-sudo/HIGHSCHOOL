@@ -138,18 +138,36 @@ export interface CreateGalleryItem {
   isActive: boolean;
 }
 
+export type ClassGalleryItemMediaType =
+  (typeof ClassGalleryItemMediaType)[keyof typeof ClassGalleryItemMediaType];
+
+export const ClassGalleryItemMediaType = {
+  image: "image",
+  video: "video",
+} as const;
+
 export interface ClassGalleryItem {
   id: number;
   classId: number;
   title: string;
   imageUrl: string;
+  mediaType?: ClassGalleryItemMediaType;
   isActive: boolean;
   createdAt: string;
 }
 
+export type CreateClassGalleryItemMediaType =
+  (typeof CreateClassGalleryItemMediaType)[keyof typeof CreateClassGalleryItemMediaType];
+
+export const CreateClassGalleryItemMediaType = {
+  image: "image",
+  video: "video",
+} as const;
+
 export interface CreateClassGalleryItem {
   title: string;
   imageUrl: string;
+  mediaType?: CreateClassGalleryItemMediaType;
   isActive: boolean;
 }
 

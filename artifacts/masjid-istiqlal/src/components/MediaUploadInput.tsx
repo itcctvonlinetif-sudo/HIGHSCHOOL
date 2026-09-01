@@ -27,6 +27,7 @@ async function fetchProvider(): Promise<string> {
 interface MediaUploadInputProps {
   value: string;
   onChange: (url: string) => void;
+  onMediaTypeChange?: (type: "image" | "video") => void;
   accept?: string;
   placeholder?: string;
   label?: string;
@@ -35,6 +36,7 @@ interface MediaUploadInputProps {
 export function MediaUploadInput({
   value,
   onChange,
+  onMediaTypeChange,
   accept = "image/*",
   placeholder = "https://...",
   label,
@@ -63,6 +65,7 @@ export function MediaUploadInput({
     setUploadDone(false);
 
     try {
+      onMediaTypeChange?.(file.type.startsWith("video/") ? "video" : "image");
       const provider = await fetchProvider();
 
       if (provider === "gcs") {

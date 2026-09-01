@@ -8,6 +8,7 @@ export const classGalleryTable = pgTable("class_gallery", {
   classId: integer("class_id").notNull().references(() => classesTable.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
   imageUrl: text("image_url").notNull(),
+  mediaType: text("media_type").notNull().default("image"),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
