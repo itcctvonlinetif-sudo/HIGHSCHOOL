@@ -457,7 +457,7 @@ export function AdminKelas() {
               ) : (
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                   {items.map((item) => {
-                    const src = getClassImage(item.imageUrl);
+                    const src = getClassMedia(item.imageUrl);
                     return <button type="button" key={item.id} onClick={() => openEdit(item)} className="group relative aspect-square overflow-hidden rounded-2xl bg-muted text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
                       {src ? <img src={src} alt={item.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" onError={(event) => { event.currentTarget.style.display = "none"; }} /> : <div className="flex h-full w-full items-center justify-center"><ImageIcon className="text-muted-foreground/50" size={30} /></div>}
                       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent p-4 pt-12"><p className="font-semibold text-white">{item.title}</p><p className="mt-1 text-xs text-white/70">{item.isPublished ? "Terbit" : "Draft"}</p></div>
