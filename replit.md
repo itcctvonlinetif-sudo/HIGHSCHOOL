@@ -7,7 +7,7 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 ## Stack
 
 - **Monorepo tool**: pnpm workspaces
-- **Node.js version**: 24 (Replit), 22 LTS compatible (local Ubuntu)
+- **Node.js version**: 20 (configured Replit module)
 - **Package manager**: pnpm
 - **TypeScript version**: 5.9
 - **API framework**: Express 5
@@ -33,7 +33,7 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 │   └── object-storage-web/ # Browser-side Replit object storage utilities
 ├── scripts/
 │   ├── src/seed.ts         # Database seeding script
-│   ├── setup-if-needed.sh  # Auto-setup script (called by artifact workflows on first run)
+│   ├── setup-if-needed.mjs # Auto-setup script (called by workflows on first run)
 │   └── post-merge.sh       # Post-merge setup (called after task agent merges)
 ├── PANDUAN-LOKAL.md        # Guide for running on local Ubuntu server
 ├── pnpm-workspace.yaml     # pnpm workspace config
@@ -61,8 +61,8 @@ Both workflows call `scripts/setup-if-needed.sh` on first run to auto-install de
 
 When importing this project to a fresh Replit environment:
 
-1. **Dependencies** — installed automatically via `scripts/setup-if-needed.sh` when workflows start
-2. **Database** — provision a PostgreSQL database (Replit Database tool), then workflows will auto-run `pnpm --filter db push` to create tables
+1. **Dependencies** — install with `pnpm install --frozen-lockfile` (the first workflow start also runs this through `scripts/setup-if-needed.mjs`)
+2. **Database** — the Replit PostgreSQL database is pre-provisioned; workflows auto-run `pnpm --filter @workspace/db run push` when `DATABASE_URL` is available
 3. **Seed data** — run once manually: `pnpm --filter @workspace/scripts run seed`
 
 ## TypeScript & Composite Projects
@@ -93,7 +93,7 @@ Express 5 API server. Routes live in `src/routes/` and use `@workspace/api-zod` 
 
 ### `artifacts/masjid-istiqlal` (`@workspace/masjid-istiqlal`)
 
-React + Vite frontend for the Musholla Nurul Iman website. Includes public-facing pages and an admin dashboard.
+React + Vite frontend for the Masjid Istiqlal website. Includes public-facing pages and an admin dashboard.
 
 - Entry: `src/main.tsx`
 - Root component: `src/App.tsx`
