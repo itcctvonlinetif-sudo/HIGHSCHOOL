@@ -69,6 +69,7 @@ async function seed() {
     { key: "classesPageTitle", value: "Galeri Kelas" },
     { key: "classesPageDescription", value: "blablablablablablalbalbalbalblablblablbalbal" },
     { key: "classesAccessTimeoutMinutes", value: "1" },
+    { key: "adminSessionTimeoutMinutes", value: "3" },
   ]);
   console.log("   ✅ Settings berhasil diisi\n");
 

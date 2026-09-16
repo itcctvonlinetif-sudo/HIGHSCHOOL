@@ -21,6 +21,13 @@ async function getSmtpConfig() {
 }
 
 const router = Router();
+const DEFAULT_ADMIN_SESSION_TIMEOUT_MINUTES = 3;
+
+function normalizeAdminSessionTimeout(value: unknown) {
+  const parsed = Number.parseInt(String(value), 10);
+  if (!Number.isInteger(parsed)) return DEFAULT_ADMIN_SESSION_TIMEOUT_MINUTES;
+  return Math.min(10, Math.max(1, parsed));
+}
 
 async function getAdminUser() {
   const [user] = await db.select().from(adminUsersTable).limit(1);
@@ -188,6 +195,31 @@ async function getSetting(key: string): Promise<string | null> {
   const [row] = await db.select().from(settingsTable).where(eq(settingsTable.key, key)).limit(1);
   return row?.value ?? null;
 }
+
+router.get("/admin/session-settings", async (req, res) => {
+  try {
+    const value = await getSetting("adminSessionTimeoutMinutes");
+    res.json({ adminSessionTimeoutMinutes: normalizeAdminSessionTimeout(value) });
+  } catch (err) {
+    req.log.error({ err }, "Failed to get admin session settings");
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.put("/admin/session-settings", async (req, res) => {
+  try {
+    const timeoutMinutes = normalizeAdminSessionTimeout(req.body?.adminSessionTimeoutMinutes);
+    await setSetting("adminSessionTimeoutMinutes", String(timeoutMinutes));
+    res.json({
+      success: true,
+      adminSessionTimeoutMinutes: timeoutMinutes,
+      message: "Pengaturan sesi Admin Portal berhasil disimpan",
+    });
+  } catch (err) {
+    req.log.error({ err }, "Failed to save admin session settings");
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 router.put("/admin/cctv-access", async (req, res) => {
   try {

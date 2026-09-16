@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useGetSettings, useUpdateSettings } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Save, Mail, Send, Eye, EyeOff, CheckCircle, XCircle, Loader2, HardDrive, Cloud } from "lucide-react";
+import { Save, Mail, Send, Eye, EyeOff, CheckCircle, XCircle, Loader2, HardDrive, Cloud, Clock3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { MediaUploadInput } from "@/components/MediaUploadInput";
 
@@ -34,6 +34,9 @@ export function AdminSettings() {
   const [emailSaving, setEmailSaving] = useState(false);
   const [emailTesting, setEmailTesting] = useState(false);
   const [emailStatus, setEmailStatus] = useState<{ ok: boolean; msg: string } | null>(null);
+  const [adminSessionTimeout, setAdminSessionTimeout] = useState(3);
+  const [adminSessionLoading, setAdminSessionLoading] = useState(true);
+  const [adminSessionSaving, setAdminSessionSaving] = useState(false);
 
   // Storage settings state
   const [storageConfig, setStorageConfig] = useState({
@@ -70,6 +73,42 @@ export function AdminSettings() {
       })
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    fetch(`${BASE}/api/admin/session-settings`, { credentials: "include" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        if (data?.adminSessionTimeoutMinutes) {
+          setAdminSessionTimeout(Math.min(10, Math.max(1, Number(data.adminSessionTimeoutMinutes))));
+        }
+      })
+      .catch(() => {})
+      .finally(() => setAdminSessionLoading(false));
+  }, []);
+
+  const handleSaveAdminSession = async () => {
+    setAdminSessionSaving(true);
+    try {
+      const response = await fetch(`${BASE}/api/admin/session-settings`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ adminSessionTimeoutMinutes: adminSessionTimeout }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.message || "Pengaturan sesi belum berhasil disimpan.");
+      setAdminSessionTimeout(Math.min(10, Math.max(1, Number(data.adminSessionTimeoutMinutes) || 3)));
+      toast({ title: "Pengaturan sesi Admin Portal disimpan" });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Gagal menyimpan pengaturan sesi",
+        description: error instanceof Error ? error.message : "Koneksi ke server gagal.",
+      });
+    } finally {
+      setAdminSessionSaving(false);
+    }
+  };
 
   const handleSaveStorage = async () => {
     setStorageSaving(true);
@@ -237,6 +276,44 @@ export function AdminSettings() {
           <Save size={20} /> {updateMutation.isPending ? "Menyimpan..." : "Simpan Pengaturan"}
         </button>
       </div>
+
+      <section className="rounded-2xl border border-primary/15 bg-primary/5 p-6 shadow-sm">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex items-start gap-3">
+            <div className="rounded-xl bg-primary/10 p-2 text-primary"><Clock3 size={20} /></div>
+            <div>
+              <h2 className="text-lg font-bold text-primary">Sesi Admin Portal</h2>
+              <p className="mt-1 max-w-xl text-sm text-muted-foreground">
+                Admin akan logout otomatis setelah tidak ada aktivitas selama waktu yang dipilih.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-end gap-3">
+            <div>
+              <label htmlFor="admin-session-timeout" className="mb-2 block text-sm font-semibold">Logout otomatis</label>
+              <select
+                id="admin-session-timeout"
+                value={adminSessionTimeout}
+                onChange={(event) => setAdminSessionTimeout(Number(event.target.value))}
+                disabled={adminSessionLoading || adminSessionSaving}
+                className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:opacity-60"
+              >
+                {Array.from({ length: 10 }, (_, index) => index + 1).map((minute) => (
+                  <option key={minute} value={minute}>{minute} menit</option>
+                ))}
+              </select>
+            </div>
+            <button
+              type="button"
+              onClick={handleSaveAdminSession}
+              disabled={adminSessionLoading || adminSessionSaving}
+              className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Save size={16} /> {adminSessionSaving ? "Menyimpan..." : "Simpan"}
+            </button>
+          </div>
+        </div>
+      </section>
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Basic Info */}
