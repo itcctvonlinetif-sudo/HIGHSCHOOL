@@ -4,9 +4,9 @@ import { useGetClasses } from "@workspace/api-client-react";
 import { Link } from "wouter";
 import { AlertCircle, ArrowRight, BookOpen, Eye, EyeOff, ImageOff, LockKeyhole, RefreshCw, ShieldCheck } from "lucide-react";
 import { toGDriveImageUrl } from "@/lib/gdrive";
+import { useKelasAccess } from "./useKelasAccess";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
-const SESSION_KEY = "kelas_access_granted";
 const DEFAULT_TITLE = "Kelas Warga";
 const DEFAULT_DESCRIPTION = "Ruang belajar bersama untuk bertumbuh dalam ilmu, adab, dan kebersamaan.";
 const FALLBACK_IMAGE = `data:image/svg+xml,${encodeURIComponent(`
@@ -40,7 +40,7 @@ export function Kelas() {
   const [settingsLoading, setSettingsLoading] = useState(true);
   const [settingsError, setSettingsError] = useState(false);
   const [settingsRetry, setSettingsRetry] = useState(0);
-  const [accessGranted, setAccessGranted] = useState(false);
+  const { accessGranted, grantAccess, lock } = useKelasAccess();
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [verifyError, setVerifyError] = useState("");
@@ -64,10 +64,7 @@ export function Kelas() {
           hasPassword: data.hasPassword !== false,
         };
         setAccessSettings(settings);
-        if (!settings.hasPassword || sessionStorage.getItem(SESSION_KEY) === "true") {
-          if (!settings.hasPassword) sessionStorage.setItem(SESSION_KEY, "true");
-          setAccessGranted(true);
-        }
+        if (!settings.hasPassword) grantAccess();
       })
       .catch(() => {
         if (cancelled) return;
@@ -81,7 +78,7 @@ export function Kelas() {
     return () => {
       cancelled = true;
     };
-  }, [settingsRetry]);
+  }, [grantAccess, settingsRetry]);
 
   const handleVerify = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -100,8 +97,7 @@ export function Kelas() {
         setVerifyError(data.message || "Password yang dimasukkan belum tepat.");
         return;
       }
-      sessionStorage.setItem(SESSION_KEY, "true");
-      setAccessGranted(true);
+      grantAccess();
       setPassword("");
     } catch {
       setVerifyError("Koneksi ke server gagal. Silakan coba lagi.");
@@ -111,8 +107,7 @@ export function Kelas() {
   };
 
   const handleLock = () => {
-    sessionStorage.removeItem(SESSION_KEY);
-    setAccessGranted(false);
+    lock();
     setPassword("");
     setVerifyError("");
   };

@@ -3,9 +3,9 @@ import { useRoute, Link } from "wouter";
 import { ArrowLeft, BookOpen, Calendar, Image as ImageIcon, User, Video, X } from "lucide-react";
 import { useState } from "react";
 import { toGDriveImageUrl } from "@/lib/gdrive";
+import { useKelasAccess } from "./useKelasAccess";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
-const SESSION_KEY = "kelas_access_granted";
 
 function getMediaSrc(url: string | null | undefined, mediaType: "image" | "video" = "image") {
   if (!url) return null;
@@ -40,7 +40,7 @@ function getGDriveId(url: string): string | null {
 export function KelasDetail() {
   const [, params] = useRoute("/kelas/:id");
   const id = params?.id ? parseInt(params.id, 10) : 0;
-  const hasAccess = typeof window !== "undefined" && sessionStorage.getItem(SESSION_KEY) === "true";
+  const { accessGranted: hasAccess } = useKelasAccess();
   const { data: item, isLoading, error } = useGetClassById(id, {
     query: { enabled: id > 0 },
   });
