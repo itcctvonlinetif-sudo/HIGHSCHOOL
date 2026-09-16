@@ -101,29 +101,6 @@ function getGDriveId(url: string): string | null {
   }
 }
 
-function AdminSessionTimer({ minutes }: { minutes: number }) {
-  const totalSeconds = minutes * 60;
-  const [remainingSeconds, setRemainingSeconds] = useState(totalSeconds);
-
-  useEffect(() => {
-    setRemainingSeconds(totalSeconds);
-    const resetTimer = () => setRemainingSeconds(totalSeconds);
-    const intervalId = window.setInterval(() => {
-      setRemainingSeconds((current) => Math.max(0, current - 1));
-    }, 1000);
-    const activityEvents: Array<keyof WindowEventMap> = ["pointerdown", "keydown", "touchstart", "scroll", "mousemove"];
-    activityEvents.forEach((eventName) => window.addEventListener(eventName, resetTimer, { passive: true }));
-    return () => {
-      window.clearInterval(intervalId);
-      activityEvents.forEach((eventName) => window.removeEventListener(eventName, resetTimer));
-    };
-  }, [totalSeconds]);
-
-  const minutesLeft = Math.floor(remainingSeconds / 60);
-  const secondsLeft = remainingSeconds % 60;
-  return <span className="font-bold tabular-nums text-primary">{minutesLeft}:{String(secondsLeft).padStart(2, "0")}</span>;
-}
-
 function ClassGalleryPanel({
   classId,
   items,
@@ -432,6 +409,7 @@ export function AdminKelas() {
       if (!response.ok) throw new Error(data.message || "Pengaturan belum berhasil disimpan.");
 
       toast({ title: "Pengaturan disimpan", description: data.message || "Halaman Kelas berhasil diperbarui." });
+      window.dispatchEvent(new Event("kelas-access-settings-updated"));
       setAccessForm((current) => ({ ...current, classesAccessPassword: "", hasPassword: true }));
     } catch (error) {
       toast({
@@ -609,7 +587,7 @@ export function AdminKelas() {
               <div><label htmlFor="access-title" className="mb-2 block text-sm font-semibold">Judul halaman</label><input id="access-title" type="text" value={accessForm.classesPageTitle} onChange={(event) => setAccessForm((current) => ({ ...current, classesPageTitle: event.target.value }))} className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10" required /></div>
               <div><label htmlFor="access-description" className="mb-2 block text-sm font-semibold">Deskripsi halaman</label><textarea id="access-description" value={accessForm.classesPageDescription} onChange={(event) => setAccessForm((current) => ({ ...current, classesPageDescription: event.target.value }))} rows={4} className="w-full resize-none rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10" required /></div>
                <div className="border-t border-border pt-5"><div className="mb-2 flex items-center gap-2"><label htmlFor="access-password" className="text-sm font-semibold">Password warga</label><span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">{accessForm.hasPassword ? "Aktif" : "Belum diset"}</span></div><p className="mb-3 text-xs leading-5 text-muted-foreground">Isi hanya jika ingin membuat password baru. Nilai password tersimpan tidak pernah ditampilkan.</p><div className="relative"><input id="access-password" autoComplete="new-password" type={showNewPassword ? "text" : "password"} value={accessForm.classesAccessPassword} onChange={(event) => setAccessForm((current) => ({ ...current, classesAccessPassword: event.target.value }))} placeholder="Password baru (opsional)" className="w-full rounded-xl border border-input bg-background px-4 py-3 pr-12 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10" /><button type="button" aria-label={showNewPassword ? "Sembunyikan password baru" : "Tampilkan password baru"} onClick={() => setShowNewPassword((value) => !value)} className="absolute inset-y-0 right-0 px-4 text-muted-foreground hover:text-primary">{showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button></div></div>
-               <div className="rounded-2xl border border-primary/15 bg-primary/5 p-4"><div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><label htmlFor="access-timeout" className="mb-1 block text-sm font-semibold">Batas tidak aktif</label><p className="text-xs leading-5 text-muted-foreground">Akses galeri otomatis terkunci setelah tidak ada aktivitas.</p></div><select id="access-timeout" value={accessForm.classesAccessTimeoutMinutes} onChange={(event) => setAccessForm((current) => ({ ...current, classesAccessTimeoutMinutes: Number(event.target.value) }))} className="rounded-xl border border-input bg-background px-4 py-3 text-sm font-semibold outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">{Array.from({ length: 10 }, (_, index) => index + 1).map((minute) => <option key={minute} value={minute}>{minute} menit</option>)}</select></div><div className="mt-4 flex items-center justify-between border-t border-primary/10 pt-3 text-xs"><span className="text-muted-foreground">Timer sesi aktif di Admin Portal</span><AdminSessionTimer minutes={accessForm.classesAccessTimeoutMinutes} /></div></div>
+               <div className="rounded-2xl border border-primary/15 bg-primary/5 p-4"><div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><label htmlFor="access-timeout" className="mb-1 block text-sm font-semibold">Batas tidak aktif</label><p className="text-xs leading-5 text-muted-foreground">Akses galeri otomatis terkunci setelah tidak ada aktivitas.</p></div><select id="access-timeout" value={accessForm.classesAccessTimeoutMinutes} onChange={(event) => setAccessForm((current) => ({ ...current, classesAccessTimeoutMinutes: Number(event.target.value) }))} className="rounded-xl border border-input bg-background px-4 py-3 text-sm font-semibold outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">{Array.from({ length: 10 }, (_, index) => index + 1).map((minute) => <option key={minute} value={minute}>{minute} menit</option>)}</select></div><div className="mt-4 border-t border-primary/10 pt-3 text-xs text-muted-foreground">Timer sesi aktif tampil terus di bawah judul Admin Portal.</div></div>
               <div className="flex justify-end border-t border-border pt-5"><button type="submit" disabled={accessSaving} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"><Save size={16} /> {accessSaving ? "Menyimpan..." : "Simpan Pengaturan"}</button></div>
             </form>
           )}

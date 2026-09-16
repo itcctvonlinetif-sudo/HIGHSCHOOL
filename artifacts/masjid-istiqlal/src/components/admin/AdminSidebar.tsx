@@ -5,6 +5,7 @@ import {
   Clock, LogOut, LayoutGrid, KeyRound, LayoutTemplate, Palette, PanelBottom
 } from "lucide-react";
 import { removeAuthToken } from "@/lib/auth";
+import { AdminSessionTimer } from "./AdminSessionTimer";
 
 const adminLinks = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -34,9 +35,12 @@ export function AdminSidebar() {
 
   return (
     <aside className="w-64 bg-primary text-primary-foreground hidden md:flex flex-col h-screen sticky top-0 border-r-4 border-secondary">
-      <div className="p-6 flex items-center gap-3 border-b border-white/10">
+      <div className="p-6 border-b border-white/10">
+        <div className="flex items-center gap-3">
         <img src={`${import.meta.env.BASE_URL}images/logo.png`} alt="Logo" className="w-8 h-8 brightness-0 invert" />
         <h2 className="font-display font-bold text-xl text-secondary">Admin Portal</h2>
+        </div>
+        <div className="mt-2 pl-11"><AdminSessionTimer variant="sidebar" /></div>
       </div>
       
       <div className="flex-1 overflow-y-auto py-6 px-3 space-y-1">

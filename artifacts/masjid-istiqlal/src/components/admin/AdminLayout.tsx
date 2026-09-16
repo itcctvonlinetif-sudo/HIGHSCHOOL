@@ -1,6 +1,7 @@
 import { ReactNode, useEffect } from "react";
 import { useLocation } from "wouter";
 import { AdminSidebar } from "./AdminSidebar";
+import { AdminSessionTimer } from "./AdminSessionTimer";
 import { isAuthenticated } from "@/lib/auth";
 
 export function AdminLayout({ children }: { children: ReactNode }) {
@@ -21,6 +22,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
       <main className="flex-1 overflow-x-hidden flex flex-col">
         <header className="bg-white shadow-sm border-b border-border px-8 py-4 md:hidden">
           <h1 className="font-display font-bold text-xl text-primary">Admin Portal</h1>
+          <AdminSessionTimer />
         </header>
         <div className="p-4 md:p-8 flex-1">
           {children}

@@ -11,6 +11,8 @@ import {
   pagesTable,
   cctvTable,
   layananTable,
+  classesTable,
+  classGalleryTable,
 } from "@workspace/db";
 
 const FORCE = process.argv.includes("--force");
@@ -64,6 +66,9 @@ async function seed() {
     { key: "smtpGmail", value: "" },
     { key: "smtpPassword", value: "" },
     { key: "smtpRecipient", value: "" },
+    { key: "classesPageTitle", value: "Galeri Kelas" },
+    { key: "classesPageDescription", value: "blablablablablablalbalbalbalblablblablbalbal" },
+    { key: "classesAccessTimeoutMinutes", value: "1" },
   ]);
   console.log("   ✅ Settings berhasil diisi\n");
 
@@ -331,6 +336,65 @@ async function seed() {
     { title: "Festival Kuliner Halal", imageUrl: "https://picsum.photos/seed/gallery12/800/600", category: "Kegiatan", isActive: false },
   ]);
   console.log("   ✅ Galeri berhasil diisi\n");
+
+  // ─── Galeri Kelas ─────────────────────────────────────────────────────────────
+  console.log("🎓 Mengisi Galeri Kelas...");
+  await db.delete(classGalleryTable);
+  await db.delete(classesTable);
+  const seededClasses = await db.insert(classesTable).values([
+    {
+      title: "7 F",
+      slug: "7-f",
+      content: "tes",
+      excerpt: "tes",
+      imageUrl: "https://drive.google.com/thumbnail?id=1CyyJIEbwt0WS7cJEhJcOr1T2pkinwWPv&sz=w1000",
+      author: "Admin",
+      isPublished: true,
+      publishedAt: null,
+    },
+    {
+      title: "8 F",
+      slug: "8-f",
+      content: "jtdejndgjmgjgdj",
+      excerpt: "fdndfndgdgnjd",
+      imageUrl: "https://drive.google.com/thumbnail?id=1ho06-3d3jdpbulM8OnUUwc4QyXdkdxmF&sz=w1000",
+      author: "Admin",
+      isPublished: true,
+      publishedAt: null,
+    },
+  ]).returning({ id: classesTable.id, slug: classesTable.slug });
+  const classIdBySlug = new Map(seededClasses.map((item) => [item.slug, item.id]));
+  await db.insert(classGalleryTable).values([
+    {
+      classId: classIdBySlug.get("7-f")!,
+      title: "gacoan",
+      imageUrl: "https://drive.google.com/thumbnail?id=1pauIQX2asC0vLROGykhcIFWkuFV5dso-&sz=w1000",
+      mediaType: "image",
+      isActive: true,
+    },
+    {
+      classId: classIdBySlug.get("7-f")!,
+      title: "7f",
+      imageUrl: "https://drive.google.com/thumbnail?id=12w64BMSe8IudvjT8x8htRDj5fve3R7bu&sz=w1000",
+      mediaType: "video",
+      isActive: true,
+    },
+    {
+      classId: classIdBySlug.get("8-f")!,
+      title: "1",
+      imageUrl: "https://drive.google.com/thumbnail?id=1t04V8npffS7EXT9Y9-JhEclJ8b56W3c8&sz=w1000",
+      mediaType: "image",
+      isActive: true,
+    },
+    {
+      classId: classIdBySlug.get("8-f")!,
+      title: "sdgs",
+      imageUrl: "https://drive.google.com/thumbnail?id=1thUy-OLspvS7ugoOtIdZB-8ThhMtpCSt&sz=w1000",
+      mediaType: "video",
+      isActive: true,
+    },
+  ]);
+  console.log("   ✅ Galeri Kelas berhasil diisi\n");
 
   // ─── Pages ────────────────────────────────────────────────────────────────────
   console.log("📄 Membuat halaman statis...");
