@@ -25,6 +25,7 @@ const FALLBACK_IMAGE = `data:image/svg+xml,${encodeURIComponent(`
 interface AccessSettings {
   classesPageTitle: string;
   classesPageDescription: string;
+  accessTimeoutMinutes: number;
   hasPassword: boolean;
 }
 
@@ -40,7 +41,7 @@ export function Kelas() {
   const [settingsLoading, setSettingsLoading] = useState(true);
   const [settingsError, setSettingsError] = useState(false);
   const [settingsRetry, setSettingsRetry] = useState(0);
-  const { accessGranted, grantAccess, lock } = useKelasAccess();
+  const { accessGranted, grantAccess, lock } = useKelasAccess(accessSettings?.accessTimeoutMinutes);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [verifyError, setVerifyError] = useState("");
@@ -61,6 +62,7 @@ export function Kelas() {
         const settings = {
           classesPageTitle: data.classesPageTitle || DEFAULT_TITLE,
           classesPageDescription: data.classesPageDescription || DEFAULT_DESCRIPTION,
+          accessTimeoutMinutes: Math.min(10, Math.max(1, Number(data.accessTimeoutMinutes) || 3)),
           hasPassword: data.hasPassword !== false,
         };
         setAccessSettings(settings);

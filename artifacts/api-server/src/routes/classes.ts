@@ -5,6 +5,13 @@ import { and, eq } from "drizzle-orm";
 
 const router = Router();
 const DEFAULT_ACCESS_PASSWORD = "kelas123";
+const DEFAULT_ACCESS_TIMEOUT_MINUTES = 3;
+
+function normalizeAccessTimeout(value: unknown) {
+  const parsed = Number.parseInt(String(value), 10);
+  if (!Number.isInteger(parsed)) return DEFAULT_ACCESS_TIMEOUT_MINUTES;
+  return Math.min(10, Math.max(1, parsed));
+}
 
 router.get("/classes", async (req, res) => {
   try {
@@ -35,6 +42,7 @@ router.get("/classes/access-settings", async (req, res) => {
     res.json({
       classesPageTitle: map.classesPageTitle ?? "Kelas",
       classesPageDescription: map.classesPageDescription ?? "Kumpulan kelas dan pembelajaran warga.",
+      accessTimeoutMinutes: normalizeAccessTimeout(map.classesAccessTimeoutMinutes),
       hasPassword: true,
     });
   } catch (err) {
@@ -198,6 +206,7 @@ router.get("/admin/classes-access", async (req, res) => {
     res.json({
       classesPageTitle: map.classesPageTitle ?? "Kelas",
       classesPageDescription: map.classesPageDescription ?? "Kumpulan kelas dan pembelajaran warga.",
+      accessTimeoutMinutes: normalizeAccessTimeout(map.classesAccessTimeoutMinutes),
       hasPassword: true,
     });
   } catch (err) {
@@ -208,7 +217,7 @@ router.get("/admin/classes-access", async (req, res) => {
 
 router.put("/admin/classes-access", async (req, res) => {
   try {
-    const { classesPageTitle, classesPageDescription, classesAccessPassword } = req.body;
+    const { classesPageTitle, classesPageDescription, classesAccessPassword, classesAccessTimeoutMinutes } = req.body;
     const values = [
       ["classesPageTitle", classesPageTitle],
       ["classesPageDescription", classesPageDescription],
@@ -219,6 +228,12 @@ router.put("/admin/classes-access", async (req, res) => {
           .values({ key, value: String(value) })
           .onConflictDoUpdate({ target: settingsTable.key, set: { value: String(value) } });
       }
+    }
+    if (classesAccessTimeoutMinutes !== undefined) {
+      const timeoutMinutes = normalizeAccessTimeout(classesAccessTimeoutMinutes);
+      await db.insert(settingsTable)
+        .values({ key: "classesAccessTimeoutMinutes", value: String(timeoutMinutes) })
+        .onConflictDoUpdate({ target: settingsTable.key, set: { value: String(timeoutMinutes) } });
     }
     if (classesAccessPassword !== undefined && classesAccessPassword !== "") {
       const hash = await bcrypt.hash(classesAccessPassword, 10);
