@@ -266,7 +266,7 @@ export function AdminSettings() {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Pengaturan Situs</h1>
-          <p className="text-gray-500 text-sm">Konfigurasi informasi utama website Musholla Nurul Iman</p>
+          <p className="text-gray-500 text-sm">Konfigurasi informasi utama website Zein Page</p>
         </div>
         <button 
           onClick={handleSubmit} 
@@ -497,7 +497,7 @@ export function AdminSettings() {
                 value={emailConfig.smtpRecipient}
                 onChange={e => setEmailConfig({...emailConfig, smtpRecipient: e.target.value})}
                 className="w-full border rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary/20 outline-none"
-                placeholder="admin@istiqlal.or.id"
+                placeholder="admin@zeinpage.id"
               />
               <p className="text-xs text-gray-400 mt-1">Email yang akan menerima pesan dari formulir kontak website. Biarkan kosong untuk menggunakan Gmail pengirim.</p>
             </div>

@@ -190,7 +190,7 @@ export function Galeri() {
       <div className="bg-primary pt-20 pb-12 px-4 mb-12">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">Galeri</h1>
-          <p className="text-primary-foreground/80 text-lg">Dokumentasi keindahan dan kegiatan Musholla Nurul Iman</p>
+          <p className="text-primary-foreground/80 text-lg">Dokumentasi kegiatan Zein Page</p>
         </div>
       </div>
 

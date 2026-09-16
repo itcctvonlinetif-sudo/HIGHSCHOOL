@@ -16,7 +16,7 @@ async function getSmtpConfig() {
     user: process.env.SMTP_USER || map["smtpGmail"] || "",
     pass: process.env.SMTP_PASS || map["smtpPassword"] || "",
     from: process.env.SMTP_FROM || map["smtpGmail"] || "",
-    siteName: map["siteName"] || "Musholla Nurul Iman",
+    siteName: map["siteName"] || "Zein Page",
   };
 }
 
@@ -41,7 +41,7 @@ async function ensureDefaultAdmin() {
     await db.insert(adminUsersTable).values({
       username: "admin",
       passwordHash: hash,
-      email: "admin@istiqlal.or.id",
+      email: "admin@zeinpage.id",
     });
   }
   return getAdminUser();

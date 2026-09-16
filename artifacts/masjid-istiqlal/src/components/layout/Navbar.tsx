@@ -30,7 +30,7 @@ export function Navbar() {
             </div>
             <div>
               <h1 className="font-display font-bold text-xl text-primary leading-tight">
-                {settings?.siteName || "Musholla Nurul Iman"}
+                {settings?.siteName || "Zein Page"}
               </h1>
               <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
                 {settings?.tagline || "Official Website"}

@@ -198,11 +198,11 @@ export function AdminTampilan() {
             }}
           >
             <div className="font-bold text-base mb-1" style={{ fontFamily: `'${form.themeHeadingFont}', serif` }}>
-              Musholla Nurul Iman
+              Zein Page
             </div>
             <p className="opacity-80 text-xs">Pusat peribadatan dan syiar Islam yang mengedepankan toleransi dan kedamaian.</p>
             <div className="mt-3 pt-3 border-t text-xs opacity-60" style={{ borderColor: form.themeFooterText + "30" }}>
-              © 2025 Musholla Nurul Iman. All rights reserved.
+              © 2025 Zein Page. All rights reserved.
             </div>
           </div>
           <div className="text-xs text-center py-1 bg-gray-50 text-gray-400">Pratinjau Footer</div>
@@ -344,7 +344,7 @@ export function AdminTampilan() {
             className="mt-2 p-3 bg-gray-50 rounded-lg text-sm text-gray-600"
             style={{ fontFamily: `'${form.themeBodyFont}', sans-serif` }}
           >
-            Contoh teks konten — Musholla Nurul Iman menyambut jemaah dari seluruh penjuru.
+            Contoh teks konten — Zein Page menyambut Anda dari seluruh penjuru.
           </div>
         </div>
 
@@ -364,7 +364,7 @@ export function AdminTampilan() {
             className="mt-2 p-3 bg-gray-50 rounded-lg text-xl font-bold"
             style={{ fontFamily: `'${form.themeHeadingFont}', serif`, color: form.themePrimaryColor }}
           >
-            Selamat Datang di Musholla Nurul Iman
+            Selamat Datang di Zein Page
           </div>
         </div>
       </div>

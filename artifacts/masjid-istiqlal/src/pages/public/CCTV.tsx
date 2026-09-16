@@ -67,7 +67,7 @@ export function CCTV() {
   };
 
   const pageTitle = accessSettings?.cctvPageTitle || "Live CCTV";
-  const pageDesc = accessSettings?.cctvPageDescription || "Pantauan langsung area musholla";
+  const pageDesc = accessSettings?.cctvPageDescription || "Pantauan langsung area Zein Page";
 
   if (isLoading || accessSettings === null) {
     return (

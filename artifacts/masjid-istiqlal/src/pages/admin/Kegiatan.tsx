@@ -24,7 +24,7 @@ export function AdminKegiatan() {
     return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
   };
 
-  const defaultForm = { title: "", description: "", location: "Musholla Nurul Iman", startDate: "", endDate: "", isActive: true };
+  const defaultForm = { title: "", description: "", location: "Zein Page", startDate: "", endDate: "", isActive: true };
   const [formData, setFormData] = useState(defaultForm);
 
   const closeForm = () => { setIsFormOpen(false); setEditingId(null); setFormData(defaultForm); };

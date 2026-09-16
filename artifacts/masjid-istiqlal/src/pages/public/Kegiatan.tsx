@@ -14,7 +14,7 @@ export function Kegiatan() {
       <div className="bg-primary pt-20 pb-12 px-4 mb-12">
         <div className="max-w-7xl mx-auto">
           <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">Agenda Kegiatan</h1>
-          <p className="text-primary-foreground/80 text-lg">Jadwal kegiatan rutin dan khusus di Musholla Nurul Iman</p>
+          <p className="text-primary-foreground/80 text-lg">Jadwal kegiatan rutin dan khusus di Zein Page</p>
         </div>
       </div>
 

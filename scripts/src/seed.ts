@@ -28,7 +28,7 @@ async function seed() {
     }
   }
 
-  console.log("🌱 Memulai seed database Musholla Nurul Iman...\n");
+  console.log("🌱 Memulai seed database Zein Page...\n");
 
   // ─── Admin User ─────────────────────────────────────────────────────────────
   console.log("👤 Membuat admin user...");
@@ -37,7 +37,7 @@ async function seed() {
   await db.insert(adminUsersTable).values({
     username: "admin",
     passwordHash,
-    email: "admin@istiqlal.or.id",
+    email: "admin@zeinpage.id",
   });
   console.log("   ✅ Admin: username=admin | password=istiqlal2024\n");
 
@@ -45,24 +45,24 @@ async function seed() {
   console.log("⚙️  Mengisi site settings...");
   await db.delete(settingsTable);
   await db.insert(settingsTable).values([
-    { key: "siteName", value: "Musholla Nurul Iman" },
-    { key: "tagline", value: "Musholla Nurul Iman Petukangan Utara" },
-    { key: "description", value: "Musholla Nurul Iman adalah masjid nasional negara Republik Indonesia yang terletak di Jakarta Pusat. Masjid ini merupakan masjid terbesar di Asia Tenggara." },
-    { key: "heroTitle", value: "Musholla Nurul Iman" },
+    { key: "siteName", value: "Zein Page" },
+    { key: "tagline", value: "Zein Page untuk komunitas dan masyarakat" },
+    { key: "description", value: "Zein Page adalah pusat informasi dan layanan komunitas yang menghadirkan kegiatan, berita, dan layanan untuk masyarakat." },
+    { key: "heroTitle", value: "Zein Page" },
     { key: "heroSubtitle", value: "Simbol Kemerdekaan, Toleransi, dan Peradaban Islam" },
     { key: "heroImageUrl", value: "" },
     { key: "address", value: "Jl. Taman Wijaya Kusuma, Ps. Baru, Kec. Sawah Besar, Kota Jakarta Pusat, DKI Jakarta 10710" },
     { key: "phone", value: "(021) 345-1523" },
     { key: "email", value: "imannrl31@gmail.com" },
-    { key: "mapUrl", value: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d247.8937816199026!2d106.74584625273336!3d-6.224050505888154!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f1003f538469%3A0x942d93484658a9e3!2sMusholla%20Nurul%20Iman!5e0!3m2!1sen!2sid!4v1774938228782!5m2!1sen!2sid" },
-    { key: "facebookUrl", value: "https://facebook.com/MasjidIstiqlalOfficial" },
-    { key: "instagramUrl", value: "https://instagram.com/masjidistiqlal_official" },
-    { key: "youtubeUrl", value: "https://youtube.com/@MasjidIstiqlal" },
-    { key: "twitterUrl", value: "https://twitter.com/MasjidIstiqlal" },
-    { key: "facebook", value: "https://www.facebook.com/mushollanuruliman" },
-    { key: "instagram", value: "https://www.instagram.com/mushollanuruliman" },
+    { key: "mapUrl", value: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d247.8937816199026!2d106.74584625273336!3d-6.224050505888154!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f1003f538469%3A0x942d93484658a9e3!2sZein%20Page!5e0!3m2!1sen!2sid!4v1774938228782!5m2!1sen!2sid" },
+    { key: "facebookUrl", value: "https://facebook.com/zeinpage" },
+    { key: "instagramUrl", value: "https://instagram.com/zeinpage" },
+    { key: "youtubeUrl", value: "https://youtube.com/@zeinpage" },
+    { key: "twitterUrl", value: "https://twitter.com/zeinpage" },
+    { key: "facebook", value: "https://www.facebook.com/zeinpage" },
+    { key: "instagram", value: "https://www.instagram.com/zeinpage" },
     { key: "twitter", value: "" },
-    { key: "youtube", value: "https://www.youtube.com/mushollanuruliman" },
+    { key: "youtube", value: "https://www.youtube.com/@zeinpage" },
     { key: "smtpGmail", value: "" },
     { key: "smtpPassword", value: "" },
     { key: "smtpRecipient", value: "" },
@@ -109,7 +109,7 @@ async function seed() {
   await db.insert(layananTable).values([
     {
       title: "Pendaftaran Nikah",
-      description: "Layanan pendaftaran pernikahan di Musholla Nurul Iman untuk pasangan muslim.",
+      description: "Layanan pendaftaran pernikahan di Zein Page untuk pasangan muslim.",
       icon: "Heart",
       order: 1,
       isActive: true,
@@ -118,25 +118,25 @@ async function seed() {
       popupSubtitle: "Wujudkan pernikahan sakral di Masjid terbesar Asia Tenggara",
       popupImageUrl: "",
       popupInstructions:
-        "Datang ke kantor administrasi Musholla Nurul Iman\nBawa fotokopi KTP calon mempelai (2 lembar)\nBawa fotokopi kartu keluarga (2 lembar)\nBawa surat pengantar dari RT/RW\nIsi formulir pendaftaran di loket\nLunasi biaya administrasi",
+        "Datang ke kantor administrasi Zein Page\nBawa fotokopi KTP calon mempelai (2 lembar)\nBawa fotokopi kartu keluarga (2 lembar)\nBawa surat pengantar dari RT/RW\nIsi formulir pendaftaran di loket\nLunasi biaya administrasi",
       popupHighlightTitle: "Biaya & Jadwal",
       popupHighlightContent:
         "Biaya administrasi: Rp 500.000\nJadwal hari kerja: Senin–Jumat, 08.00–15.00 WIB\nHubungi: (021) 345-1523",
     },
     {
       title: "Kunjungan Wisata",
-      description: "Kunjungi Musholla Nurul Iman sebagai destinasi wisata religi dan budaya Jakarta.",
+      description: "Kunjungi Zein Page sebagai destinasi wisata religi dan budaya Jakarta.",
       icon: "MapPin",
       order: 2,
       isActive: true,
       popupEnabled: true,
-      popupTitle: "Wisata Religi Musholla Nurul Iman",
+      popupTitle: "Wisata Religi Zein Page",
       popupSubtitle: "Jelajahi keindahan arsitektur dan sejarah Masjid Nasional Indonesia",
       popupImageUrl: "",
       popupInstructions:
         "Kunjungan tersedia setiap hari kecuali waktu sholat\nWaktu kunjungan: 09.00–17.00 WIB\nGunakan pakaian sopan dan menutup aurat\nPandu wisata tersedia dengan reservasi sebelumnya\nDisarankan mendaftar secara online",
       popupHighlightTitle: "Informasi Kunjungan",
-      popupHighlightContent: "Gratis untuk umum\nKapasitas: 200.000 jamaah\nHubungi: wisata@istiqlal.or.id",
+      popupHighlightContent: "Gratis untuk umum\nKapasitas: 200.000 jamaah\nHubungi: wisata@zeinpage.id",
     },
     {
       title: "Kajian Islam",
@@ -149,19 +149,19 @@ async function seed() {
     },
     {
       title: "Infak & Sedekah",
-      description: "Salurkan infak dan sedekah Anda untuk mendukung kegiatan Musholla Nurul Iman.",
+      description: "Salurkan infak dan sedekah Anda untuk mendukung kegiatan Zein Page.",
       icon: "Gift",
       order: 4,
       isActive: true,
       popupEnabled: true,
       popupTitle: "Infak & Sedekah",
-      popupSubtitle: "Berkontribusi untuk kemajuan Musholla Nurul Iman dan umat Islam Indonesia",
+      popupSubtitle: "Berkontribusi untuk kemajuan Zein Page dan umat Islam Indonesia",
       popupImageUrl: "",
       popupInstructions:
         "Transfer melalui rekening bank yang tertera\nSertakan nama dan nomor telepon sebagai keterangan\nKonfirmasi transfer via email atau telepon\nTanda terima akan dikirimkan melalui email",
       popupHighlightTitle: "Rekening Donasi",
       popupHighlightContent:
-        "Bank Mandiri: 1230009876543\nBank BRI: 0123-01-012345-30-6\nBank BNI: 1234567890\nA/n: Yayasan Musholla Nurul Iman",
+        "Bank Mandiri: 1230009876543\nBank BRI: 0123-01-012345-30-6\nBank BNI: 1234567890\nA/n: Zein Page",
     },
     {
       title: "Ambulans Jenazah",
@@ -180,8 +180,8 @@ async function seed() {
         "Hotline 24 jam: (021) 345-9999\nWhatsApp: 0812-3456-7890\nGratis, tanpa biaya apapun",
     },
     {
-      title: "Museum Istiqlal",
-      description: "Kunjungi museum sejarah Musholla Nurul Iman dan koleksi peninggalan bersejarah.",
+      title: "Museum Zein Page",
+      description: "Kunjungi museum sejarah Zein Page dan koleksi peninggalan bersejarah.",
       icon: "Building",
       order: 6,
       isActive: true,
@@ -196,36 +196,36 @@ async function seed() {
   await db.delete(newsTable);
   await db.insert(newsTable).values([
     {
-      title: "Musholla Nurul Iman Kembali Gelar Kajian Rutin Ramadan 1447 H",
+      title: "Zein Page Kembali Gelar Kajian Rutin Ramadan 1447 H",
       slug: "kajian-rutin-ramadan-1447",
-      content: `<p>Musholla Nurul Iman Jakarta kembali menyelenggarakan program kajian rutin menyambut bulan suci Ramadan 1447 H. Program kajian ini akan diisi oleh para ulama dan cendekiawan muslim terkemuka dari seluruh Indonesia.</p>
+      content: `<p>Zein Page Jakarta kembali menyelenggarakan program kajian rutin menyambut bulan suci Ramadan 1447 H. Program kajian ini akan diisi oleh para ulama dan cendekiawan muslim terkemuka dari seluruh Indonesia.</p>
 <p>Kajian akan dilaksanakan setiap hari selama bulan Ramadan, mulai pukul 08.00 hingga 10.00 WIB dan dilanjutkan setelah sholat Ashar hingga menjelang Maghrib. Tema kajian tahun ini adalah "Memperkuat Ukhuwah Islamiyah di Era Digital".</p>
-<p>Imam Besar Musholla Nurul Iman, Prof. Dr. KH. Nasaruddin Umar, menyampaikan bahwa program ini terbuka untuk seluruh masyarakat dan jamaah dari berbagai latar belakang. "Kami mengundang seluruh umat Islam untuk hadir dan memperdalam ilmu agama," ujarnya.</p>
-<p>Selain kajian reguler, Musholla Nurul Iman juga akan menyelenggarakan sholat Tarawih berjamaah dengan kapasitas 200.000 jamaah, tadarus Al-Quran, dan berbagai program sosial selama bulan Ramadan.</p>`,
-      excerpt: "Musholla Nurul Iman kembali menggelar program kajian rutin Ramadan dengan tema Memperkuat Ukhuwah Islamiyah di Era Digital, terbuka untuk seluruh masyarakat.",
+<p>Tim Zein Page, Prof. Dr. KH. Nasaruddin Umar, menyampaikan bahwa program ini terbuka untuk seluruh masyarakat dan jamaah dari berbagai latar belakang. "Kami mengundang seluruh umat Islam untuk hadir dan memperdalam ilmu agama," ujarnya.</p>
+<p>Selain kajian reguler, Zein Page juga akan menyelenggarakan sholat Tarawih berjamaah dengan kapasitas 200.000 jamaah, tadarus Al-Quran, dan berbagai program sosial selama bulan Ramadan.</p>`,
+      excerpt: "Zein Page kembali menggelar program kajian rutin Ramadan dengan tema Memperkuat Ukhuwah Islamiyah di Era Digital, terbuka untuk seluruh masyarakat.",
       imageUrl: "https://picsum.photos/seed/istiqlal-news1/800/500",
-      author: "Tim Redaksi Istiqlal",
+      author: "Tim Redaksi Zein Page",
       isPublished: true,
       publishedAt: new Date("2026-02-20T08:00:00"),
     },
     {
-      title: "Renovasi Selesai, Musholla Nurul Iman Tampil Lebih Modern dan Nyaman",
+      title: "Renovasi Selesai, Zein Page Tampil Lebih Modern dan Nyaman",
       slug: "renovasi-selesai-masjid-istiqlal-lebih-modern",
-      content: `<p>Proyek renovasi besar-besaran Musholla Nurul Iman yang dimulai sejak tahun 2019 akhirnya tuntas sepenuhnya. Masjid Nasional Indonesia ini kini tampil lebih modern, bersih, dan nyaman bagi jamaah yang datang dari seluruh penjuru Indonesia maupun mancanegara.</p>
+      content: `<p>Proyek renovasi besar-besaran Zein Page yang dimulai sejak tahun 2019 akhirnya tuntas sepenuhnya. Zein Page kini tampil lebih modern, bersih, dan nyaman bagi masyarakat yang datang dari seluruh penjuru Indonesia maupun mancanegara.</p>
 <p>Beberapa perubahan signifikan yang dilakukan antara lain peningkatan sistem pendingin udara, renovasi kamar mandi dan tempat wudhu, penambahan lift untuk jamaah berkebutuhan khusus, serta pemasangan sistem audio visual modern.</p>
 <p>Kapasitas masjid juga ditingkatkan sehingga dapat menampung hingga 200.000 jamaah sekaligus, menjadikannya salah satu masjid dengan kapasitas terbesar di dunia.</p>
-<p>Direktur Utama Badan Pengelola Musholla Nurul Iman menyampaikan apresiasi kepada seluruh pihak yang terlibat dalam proses renovasi. "Ini adalah wujud nyata perhatian pemerintah dan masyarakat terhadap rumah Allah yang menjadi kebanggaan seluruh umat Islam Indonesia," katanya.</p>`,
-      excerpt: "Renovasi besar-besaran Musholla Nurul Iman telah selesai. Masjid kini tampil lebih modern dengan sistem pendingin baru, tempat wudhu yang diperluas, dan kapasitas 200.000 jamaah.",
+<p>Tim pengelola Zein Page menyampaikan apresiasi kepada seluruh pihak yang terlibat dalam proses renovasi. "Ini adalah wujud nyata perhatian masyarakat terhadap ruang bersama yang menjadi kebanggaan warga," katanya.</p>`,
+      excerpt: "Renovasi besar-besaran Zein Page telah selesai dan kini tampil lebih modern serta nyaman.",
       imageUrl: "https://picsum.photos/seed/istiqlal-news2/800/500",
-      author: "Tim Redaksi Istiqlal",
+      author: "Tim Redaksi Zein Page",
       isPublished: true,
       publishedAt: new Date("2026-01-15T09:00:00"),
     },
     {
-      title: "Program Beasiswa Santri Musholla Nurul Iman 2026 Dibuka",
+      title: "Program Beasiswa Santri Zein Page 2026 Dibuka",
       slug: "program-beasiswa-santri-2026-dibuka",
-      content: `<p>Musholla Nurul Iman Jakarta membuka pendaftaran Program Beasiswa Santri 2026 untuk generasi muda muslim yang berprestasi dan membutuhkan dukungan finansial dalam melanjutkan pendidikan mereka.</p>
-<p>Program beasiswa ini mencakup biaya pendidikan penuh, tunjangan hidup bulanan, akomodasi di asrama Musholla Nurul Iman, serta bimbingan intensif dari para ulama dan akademisi terkemuka.</p>
+      content: `<p>Zein Page membuka pendaftaran Program Beasiswa Santri 2026 untuk generasi muda muslim yang berprestasi dan membutuhkan dukungan finansial dalam melanjutkan pendidikan mereka.</p>
+<p>Program beasiswa ini mencakup biaya pendidikan penuh, tunjangan hidup bulanan, akomodasi, serta bimbingan intensif dari para ulama dan akademisi terkemuka.</p>
 <p>Syarat pendaftaran:</p>
 <ul>
 <li>Warga negara Indonesia dan beragama Islam</li>
@@ -234,33 +234,33 @@ async function seed() {
 <li>Tidak sedang menerima beasiswa lain</li>
 <li>Hafiz/hafidzah minimal 5 juz Al-Quran menjadi nilai plus</li>
 </ul>
-<p>Pendaftaran dibuka mulai 1 April hingga 30 April 2026. Informasi lengkap dan formulir pendaftaran dapat diunduh melalui website resmi Musholla Nurul Iman.</p>`,
-      excerpt: "Program Beasiswa Santri Musholla Nurul Iman 2026 dibuka untuk generasi muda muslim berprestasi. Mencakup biaya pendidikan penuh, tunjangan bulanan, dan bimbingan ulama.",
+<p>Pendaftaran dibuka mulai 1 April hingga 30 April 2026. Informasi lengkap dan formulir pendaftaran dapat diunduh melalui website resmi Zein Page.</p>`,
+      excerpt: "Program Beasiswa Santri Zein Page 2026 dibuka untuk generasi muda muslim berprestasi.",
       imageUrl: "https://picsum.photos/seed/istiqlal-news3/800/500",
-      author: "Divisi Pendidikan Istiqlal",
+      author: "Divisi Pendidikan Zein Page",
       isPublished: true,
       publishedAt: new Date("2026-03-10T07:00:00"),
     },
     {
-      title: "Peresmian Taman Refleksi Istiqlal-Katedral",
+      title: "Peresmian Taman Refleksi Zein Page-Katedral",
       slug: "peresmian-taman-refleksi-istiqlal-katedral",
-      content: `<p>Taman Refleksi yang menghubungkan area Musholla Nurul Iman dan Katedral Jakarta secara resmi dibuka untuk umum. Taman ini menjadi simbol nyata kerukunan antarumat beragama di Indonesia yang telah lama menjadi kebanggaan bangsa.</p>
+      content: `<p>Taman Refleksi yang menghubungkan area Zein Page dan Katedral Jakarta secara resmi dibuka untuk umum. Taman ini menjadi simbol nyata kerukunan antarumat beragama di Indonesia yang telah lama menjadi kebanggaan bangsa.</p>
 <p>Taman ini dilengkapi dengan jalur pedestrian yang nyaman, area duduk, instalasi seni yang mencerminkan nilai-nilai toleransi, serta papan informasi sejarah hubungan kedua rumah ibadah bersejarah ini.</p>
-<p>Pembukaan taman dihadiri oleh Menteri Agama Republik Indonesia, Pimpinan Konferensi Waligereja Indonesia, serta Imam Besar Musholla Nurul Iman. Keduanya menekankan bahwa taman ini adalah simbol bahwa keberagaman adalah kekuatan Indonesia.</p>`,
-      excerpt: "Taman Refleksi Istiqlal-Katedral resmi dibuka untuk umum, menjadi simbol kerukunan antarumat beragama yang menghubungkan dua rumah ibadah bersejarah di Jakarta.",
+<p>Pembukaan taman dihadiri oleh Menteri Agama Republik Indonesia, Pimpinan Konferensi Waligereja Indonesia, serta tim Zein Page. Keduanya menekankan bahwa taman ini adalah simbol bahwa keberagaman adalah kekuatan Indonesia.</p>`,
+      excerpt: "Taman Refleksi Zein Page-Katedral resmi dibuka untuk umum sebagai simbol kerukunan antarumat beragama.",
       imageUrl: "https://picsum.photos/seed/istiqlal-news4/800/500",
-      author: "Tim Humas Istiqlal",
+      author: "Tim Humas Zein Page",
       isPublished: true,
       publishedAt: new Date("2026-02-05T10:00:00"),
     },
     {
-      title: "Musholla Nurul Iman Raih Penghargaan Green Building Internasional",
+      title: "Zein Page Raih Penghargaan Green Building Internasional",
       slug: "masjid-istiqlal-green-building-internasional",
-      content: `<p>Musholla Nurul Iman Jakarta berhasil meraih penghargaan Green Building internasional dari Dewan Bangunan Hijau Dunia (World Green Building Council) atas komitmennya dalam menerapkan prinsip-prinsip bangunan ramah lingkungan.</p>
+      content: `<p>Zein Page berhasil meraih penghargaan Green Building internasional dari Dewan Bangunan Hijau Dunia (World Green Building Council) atas komitmennya dalam menerapkan prinsip-prinsip bangunan ramah lingkungan.</p>
 <p>Penghargaan ini diberikan atas berbagai inovasi lingkungan yang diterapkan dalam renovasi terakhir, antara lain sistem panel surya yang mampu menghasilkan 35% dari kebutuhan listrik masjid, sistem pengolahan air hujan untuk keperluan wudhu, dan penggunaan material bangunan berkelanjutan.</p>`,
-      excerpt: "Musholla Nurul Iman meraih penghargaan Green Building internasional atas komitmen lingkungan, termasuk panel surya dan sistem daur ulang air.",
+      excerpt: "Zein Page meraih penghargaan Green Building internasional atas komitmen lingkungan.",
       imageUrl: "https://picsum.photos/seed/istiqlal-news5/800/500",
-      author: "Tim Redaksi Istiqlal",
+      author: "Tim Redaksi Zein Page",
       isPublished: false,
       publishedAt: null,
     },
@@ -274,7 +274,7 @@ async function seed() {
     {
       title: "Kajian Subuh Bersama Ustadz Abdul Somad",
       description: "Kajian subuh bersama Ustadz Abdul Somad dengan tema 'Meraih Ketenangan Jiwa dalam Islam'. Terbuka untuk umum, gratis, dan tidak perlu registrasi. Hadir lebih awal untuk mendapatkan tempat duduk yang baik.",
-      location: "Lantai Utama Musholla Nurul Iman",
+      location: "Lantai Utama Zein Page",
       startDate: "2026-04-10",
       endDate: "2026-04-10",
       imageUrl: "https://picsum.photos/seed/event1/800/500",
@@ -283,7 +283,7 @@ async function seed() {
     {
       title: "Peringatan Isra Mi'raj 1448 H",
       description: "Peringatan Isra Mi'raj Nabi Muhammad SAW 1448 H dengan ceramah dari ulama-ulama ternama, pembacaan sholawat, dan doa bersama. Acara dimulai pukul 19.30 WIB hingga selesai.",
-      location: "Musholla Nurul Iman Jakarta",
+      location: "Zein Page Jakarta",
       startDate: "2027-02-08",
       endDate: "2027-02-08",
       imageUrl: "https://picsum.photos/seed/event2/800/500",
@@ -292,7 +292,7 @@ async function seed() {
     {
       title: "Festival Kuliner Halal Nusantara 2026",
       description: "Festival kuliner halal terbesar yang menghadirkan ratusan UMKM makanan dan minuman halal dari seluruh Indonesia. Diramaikan dengan pertunjukan budaya, lomba memasak, dan pameran produk halal.",
-      location: "Pelataran Musholla Nurul Iman",
+      location: "Pelataran Zein Page",
       startDate: "2026-06-15",
       endDate: "2026-06-17",
       imageUrl: "https://picsum.photos/seed/event3/800/500",
@@ -301,7 +301,7 @@ async function seed() {
     {
       title: "Musabaqah Tilawatil Quran (MTQ) Tingkat DKI Jakarta",
       description: "MTQ tingkat provinsi DKI Jakarta yang mempertandingkan berbagai cabang tilawah, hafalan, dan tafsir Al-Quran. Diikuti oleh peserta dari seluruh wilayah DKI Jakarta.",
-      location: "Aula Serbaguna Musholla Nurul Iman",
+      location: "Aula Serbaguna Zein Page",
       startDate: "2026-05-20",
       endDate: "2026-05-23",
       imageUrl: "https://picsum.photos/seed/event4/800/500",
@@ -310,7 +310,7 @@ async function seed() {
     {
       title: "Seminar Nasional: Ekonomi Syariah di Era Digital",
       description: "Seminar nasional yang membahas perkembangan ekonomi syariah, fintech halal, dan UMKM berbasis syariah di Indonesia. Menghadirkan pembicara dari Bank Indonesia, OJK, dan pakar ekonomi syariah.",
-      location: "Aula Musholla Nurul Iman",
+      location: "Aula Zein Page",
       startDate: "2026-04-25",
       endDate: "2026-04-25",
       imageUrl: "https://picsum.photos/seed/event5/800/500",
@@ -323,16 +323,16 @@ async function seed() {
   console.log("🖼️  Mengisi galeri...");
   await db.delete(galleryTable);
   await db.insert(galleryTable).values([
-    { title: "Kubah Utama Musholla Nurul Iman", imageUrl: "https://picsum.photos/seed/gallery1/800/600", category: "Arsitektur", isActive: true },
+    { title: "Kubah Utama Zein Page", imageUrl: "https://picsum.photos/seed/gallery1/800/600", category: "Arsitektur", isActive: true },
     { title: "Ruang Sholat Utama", imageUrl: "https://picsum.photos/seed/gallery2/800/600", category: "Interior", isActive: true },
-    { title: "Menara Musholla Nurul Iman", imageUrl: "https://picsum.photos/seed/gallery3/800/600", category: "Arsitektur", isActive: true },
+    { title: "Menara Zein Page", imageUrl: "https://picsum.photos/seed/gallery3/800/600", category: "Arsitektur", isActive: true },
     { title: "Jamaah Sholat Jumat", imageUrl: "https://picsum.photos/seed/gallery4/800/600", category: "Kegiatan", isActive: true },
-    { title: "Taman Refleksi Istiqlal-Katedral", imageUrl: "https://picsum.photos/seed/gallery5/800/600", category: "Lingkungan", isActive: true },
+    { title: "Taman Refleksi Zein Page-Katedral", imageUrl: "https://picsum.photos/seed/gallery5/800/600", category: "Lingkungan", isActive: true },
     { title: "Kajian Ramadan 2025", imageUrl: "https://picsum.photos/seed/gallery6/800/600", category: "Kegiatan", isActive: true },
     { title: "Lorong dan Pilar Masjid", imageUrl: "https://picsum.photos/seed/gallery7/800/600", category: "Arsitektur", isActive: true },
     { title: "Area Wudhu Renovasi", imageUrl: "https://picsum.photos/seed/gallery8/800/600", category: "Interior", isActive: true },
     { title: "Sholat Idul Fitri 1447 H", imageUrl: "https://picsum.photos/seed/gallery9/800/600", category: "Kegiatan", isActive: true },
-    { title: "Perpustakaan Musholla Nurul Iman", imageUrl: "https://picsum.photos/seed/gallery10/800/600", category: "Interior", isActive: true },
+    { title: "Perpustakaan Zein Page", imageUrl: "https://picsum.photos/seed/gallery10/800/600", category: "Interior", isActive: true },
     { title: "Pintu Utama Masjid", imageUrl: "https://picsum.photos/seed/gallery11/800/600", category: "Arsitektur", isActive: true },
     { title: "Festival Kuliner Halal", imageUrl: "https://picsum.photos/seed/gallery12/800/600", category: "Kegiatan", isActive: false },
   ]);
@@ -402,17 +402,17 @@ async function seed() {
   await db.delete(pagesTable);
   await db.insert(pagesTable).values([
     {
-      title: "Profil Musholla Nurul Iman",
+      title: "Profil Zein Page",
       slug: "profil",
       isPublished: true,
-      content: `<h2>Sejarah Musholla Nurul Iman</h2>
-<p>Musholla Nurul Iman adalah masjid negara Republik Indonesia yang terletak di pusat ibukota Jakarta. Masjid ini merupakan masjid terbesar di Asia Tenggara dan salah satu yang terbesar di dunia.</p>
-<p>Istiqlal dalam bahasa Arab berarti kemerdekaan, yang mencerminkan semangat kemerdekaan Indonesia ketika masjid ini didirikan. Pembangunan masjid ini merupakan wujud rasa syukur bangsa Indonesia atas kemerdekaan yang dicapai pada tahun 1945.</p>
+      content: `<h2>Tentang Zein Page</h2>
+<p>Zein Page adalah pusat informasi dan layanan komunitas yang menghadirkan kegiatan, berita, dan layanan untuk masyarakat.</p>
+<p>Zein Page dibangun dengan semangat keterbukaan, kebersamaan, dan pelayanan yang mudah diakses oleh semua orang.</p>
 <h2>Arsitektur</h2>
-<p>Musholla Nurul Iman dirancang oleh Friedrich Silaban, seorang arsitek berkebangsaan Indonesia. Desain masjid ini memadukan unsur modernisme dengan nilai-nilai Islam. Pembangunan dimulai pada tahun 1961 dan diresmikan oleh Presiden Soeharto pada tanggal 22 Februari 1978.</p>
-<p>Kubah utama masjid berdiameter 45 meter yang melambangkan tahun kemerdekaan Indonesia. Menara tunggal setinggi 96,66 meter melambangkan tahun kelahiran Nabi Muhammad SAW, yaitu 570 M dalam penanggalan masehi (dibulatkan).</p>
+<p>Zein Page memadukan tampilan modern dengan nilai-nilai Islam dan budaya Indonesia.</p>
+<p>Ruang dan fasilitasnya dirancang agar nyaman digunakan untuk kegiatan komunitas, edukasi, dan pelayanan masyarakat.</p>
 <h2>Kapasitas dan Fasilitas</h2>
-<p>Musholla Nurul Iman mampu menampung hingga 200.000 jamaah sekaligus, menjadikannya salah satu masjid dengan kapasitas terbesar di dunia. Fasilitas yang tersedia antara lain:</p>
+<p>Zein Page menyediakan fasilitas untuk mendukung kegiatan bersama. Fasilitas yang tersedia antara lain:</p>
 <ul>
 <li>Ruang sholat utama berlantai lima</li>
 <li>Museum dan perpustakaan Islam</li>
@@ -422,11 +422,11 @@ async function seed() {
 </ul>`,
     },
     {
-      title: "Museum Istiqlal",
+      title: "Museum Zein Page",
       slug: "museum-istiqlal",
       isPublished: true,
-      content: `<h2>Museum Musholla Nurul Iman</h2>
-<p>Museum Musholla Nurul Iman menyimpan berbagai koleksi bersejarah yang berkaitan dengan pembangunan dan perkembangan Musholla Nurul Iman dari masa ke masa. Museum ini menjadi salah satu destinasi wisata edukasi yang wajib dikunjungi bagi siapa saja yang datang ke Musholla Nurul Iman.</p>
+      content: `<h2>Museum Zein Page</h2>
+<p>Museum Zein Page menyimpan berbagai koleksi bersejarah dan informasi edukatif yang dapat dipelajari oleh pengunjung.</p>
 <h2>Koleksi Museum</h2>
 <p>Koleksi museum mencakup:</p>
 <ul>
@@ -434,7 +434,7 @@ async function seed() {
 <li>Maket asli rancangan Friedrich Silaban</li>
 <li>Koleksi Al-Quran langka dan bersejarah</li>
 <li>Peralatan dan ornamen masjid dari berbagai era</li>
-<li>Diorama perjalanan sejarah Musholla Nurul Iman</li>
+<li>Diorama perjalanan sejarah Zein Page</li>
 </ul>
 <h2>Jam Operasional</h2>
 <p>Museum buka setiap hari kecuali waktu sholat fardhu:<br>
@@ -447,14 +447,14 @@ Sabtu–Ahad: 08.00–17.00 WIB</p>
       slug: "kontak",
       isPublished: true,
       content: `<h2>Hubungi Kami</h2>
-<p>Untuk informasi lebih lanjut tentang Musholla Nurul Iman, layanan, dan kegiatan kami, silakan hubungi kami melalui:</p>
+<p>Untuk informasi lebih lanjut tentang Zein Page, layanan, dan kegiatan kami, silakan hubungi kami melalui:</p>
 <h3>Alamat</h3>
 <p>Jl. Taman Wijaya Kusuma, Ps. Baru, Kec. Sawah Besar,<br>
 Kota Jakarta Pusat, DKI Jakarta 10710</p>
 <h3>Telepon</h3>
 <p>(021) 345-1523</p>
 <h3>Email</h3>
-<p>info@istiqlal.or.id</p>
+<p>info@zeinpage.id</p>
 <h3>Jam Pelayanan Administrasi</h3>
 <p>Senin – Jumat: 08.00 – 16.00 WIB<br>
 Sabtu: 08.00 – 12.00 WIB<br>
@@ -465,7 +465,7 @@ Ahad & Hari Besar: Tutup</p>`,
       slug: "panduan-berkunjung",
       isPublished: true,
       content: `<h2>Informasi Kunjungan</h2>
-<p>Musholla Nurul Iman terbuka untuk umum setiap hari. Berikut panduan untuk pengunjung yang ingin berziarah atau beribadah di Musholla Nurul Iman.</p>
+<p>Zein Page terbuka untuk umum setiap hari. Berikut panduan untuk pengunjung yang ingin mengikuti kegiatan atau menggunakan layanan Zein Page.</p>
 
 <h3>Jam Operasional</h3>
 <ul>
@@ -485,14 +485,14 @@ Ahad & Hari Besar: Tutup</p>`,
 <ul>
   <li><strong>MRT:</strong> Stasiun Lebak Bulus → Bundaran HI, lalu naik bus ke Monas</li>
   <li><strong>KRL:</strong> Stasiun Juanda (jarak ±500m berjalan kaki)</li>
-  <li><strong>Parkir:</strong> Tersedia di Gedung Parkir Istiqlal</li>
+  <li><strong>Parkir:</strong> Tersedia di area parkir Zein Page</li>
 </ul>
 
 <h3>Fasilitas</h3>
 <ul>
   <li>Tempat wudhu pria dan wanita</li>
   <li>Area shalat kapasitas 200.000 jamaah</li>
-  <li>Museum Istiqlal</li>
+  <li>Museum Zein Page</li>
   <li>Pusat informasi wisata religi</li>
   <li>Toilet &amp; fasilitas disabilitas</li>
 </ul>`,
@@ -518,7 +518,7 @@ Ahad & Hari Besar: Tutup</p>`,
       embedUrl: "https://www.youtube.com/embed/live_stream?channel=UCYfCbGfC8PGKuFMcj7iW7xw",
       isActive: true,
       order: 1,
-      description: "Live streaming ruang sholat utama Musholla Nurul Iman",
+      description: "Live streaming ruang utama Zein Page",
     },
     {
       name: "Halaman Depan Masjid",

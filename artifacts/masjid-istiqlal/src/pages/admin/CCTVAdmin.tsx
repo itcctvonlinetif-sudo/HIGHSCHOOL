@@ -253,7 +253,7 @@ export function AdminCCTV() {
                   onChange={e => setAccessForm(f => ({ ...f, cctvPageDescription: e.target.value }))}
                   rows={3}
                   className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-none"
-                  placeholder="Pantauan langsung area musholla"
+                  placeholder="Pantauan langsung area Zein Page"
                 />
               </div>
 

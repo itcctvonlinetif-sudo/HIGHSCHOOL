@@ -12,7 +12,7 @@ export function Berita() {
       <div className="bg-primary pt-20 pb-12 px-4 mb-12">
         <div className="max-w-7xl mx-auto">
           <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">Berita & Artikel</h1>
-          <p className="text-primary-foreground/80 text-lg">Informasi terbaru seputar kegiatan Musholla Nurul Iman</p>
+          <p className="text-primary-foreground/80 text-lg">Informasi terbaru seputar kegiatan Zein Page</p>
         </div>
       </div>
 

@@ -77,7 +77,7 @@ export function AdminLogin() {
             <img src={`${import.meta.env.BASE_URL}images/logo.png`} alt="Logo" className="w-12 h-12 brightness-0 invert" />
           </div>
           <h1 className="font-display text-3xl font-bold text-gray-900 mb-2">Portal Admin</h1>
-          <p className="text-gray-500">Musholla Nurul Iman Management System</p>
+          <p className="text-gray-500">Site Management System</p>
         </div>
 
         {!showForgot ? (
@@ -180,7 +180,7 @@ export function AdminLogin() {
                       value={forgotEmail}
                       onChange={e => setForgotEmail(e.target.value)}
                       className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                      placeholder="admin@istiqlal.or.id"
+                      placeholder="admin@zeinpage.id"
                       required
                     />
                   </div>

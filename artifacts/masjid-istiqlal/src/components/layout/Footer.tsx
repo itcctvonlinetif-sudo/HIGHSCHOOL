@@ -58,7 +58,7 @@ export function Footer() {
                 className="w-12 h-12 object-contain brightness-0 invert"
               />
               <h2 className="font-display text-2xl font-bold text-secondary">
-                {settings?.siteName || "Musholla Nurul Iman"}
+                {settings?.siteName || "Zein Page"}
               </h2>
             </div>
             <p className="text-primary-foreground/80 max-w-sm leading-relaxed">
@@ -136,7 +136,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="text-secondary shrink-0" size={20} />
-                <span>{settings?.email || "info@istiqlal.or.id"}</span>
+                <span>{settings?.email || "info@zeinpage.id"}</span>
               </li>
             </ul>
           </div>
@@ -144,7 +144,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-white/10 text-center text-sm text-primary-foreground/60 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p>© {new Date().getFullYear()} {settings?.siteName || "Musholla Nurul Iman"}. {copyright}</p>
+          <p>© {new Date().getFullYear()} {settings?.siteName || "Zein Page"}. {copyright}</p>
           {showAdminLink && (
             <Link href="/admin/login" className="hover:text-secondary transition-colors">Admin Portal</Link>
           )}

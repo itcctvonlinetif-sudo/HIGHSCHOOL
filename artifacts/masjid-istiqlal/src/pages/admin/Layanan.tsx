@@ -238,7 +238,7 @@ export function AdminLayanan() {
               </div>
               <div>
                 <Label className="mb-1.5 block">Link Tujuan (jika popup nonaktif)</Label>
-                <Input value={form.linkUrl} onChange={f("linkUrl")} placeholder="contoh: /halaman/museum-istiqlal atau kosongkan" />
+                <Input value={form.linkUrl} onChange={f("linkUrl")} placeholder="contoh: /halaman/museum-zein-page atau kosongkan" />
                 <p className="text-xs text-muted-foreground mt-1">Jika popup diaktifkan, link ini diabaikan. Kosongkan agar klik tidak melakukan apa-apa.</p>
               </div>
             </TabsContent>

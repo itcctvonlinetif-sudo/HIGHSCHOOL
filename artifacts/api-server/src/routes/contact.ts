@@ -16,7 +16,7 @@ async function getEmailConfig() {
     email: map["smtpGmail"] || process.env.SMTP_USER || "",
     password: map["smtpPassword"] || process.env.SMTP_PASS || "",
     recipient: map["smtpRecipient"] || process.env.SMTP_RECIPIENT || map["smtpGmail"] || process.env.SMTP_USER || "",
-    siteName: map["siteName"] || "Musholla Nurul Iman",
+    siteName: map["siteName"] || "Zein Page",
   };
 }
 

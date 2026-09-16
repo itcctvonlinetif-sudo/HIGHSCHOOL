@@ -31,13 +31,13 @@ const DEFAULT_LINKS: FooterLink[] = [
 ];
 
 const DEFAULT_FORM: FooterForm = {
-  siteName: "Musholla Nurul Iman",
+  siteName: "Zein Page",
   description: "Pusat peribadatan dan syiar Islam yang mengedepankan nilai-nilai toleransi dan kedamaian.",
   footerQuickLinksTitle: "Tautan Cepat",
   footerContactTitle: "Kontak Kami",
   address: "Jl. Taman Wijaya Kusuma, Jakarta Pusat 10710",
   phone: "(021) 3811493",
-  email: "info@istiqlal.or.id",
+  email: "info@zeinpage.id",
   facebook: "",
   twitter: "",
   instagram: "",

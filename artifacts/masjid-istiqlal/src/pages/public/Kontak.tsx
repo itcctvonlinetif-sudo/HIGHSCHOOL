@@ -41,7 +41,7 @@ export function Kontak() {
       <div className="bg-primary pt-20 pb-12 px-4 mb-12">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">Hubungi Kami</h1>
-          <p className="text-primary-foreground/80 text-lg max-w-2xl mx-auto">Kami senantiasa terbuka untuk melayani pertanyaan, masukan, dan kebutuhan informasi Anda terkait Musholla Nurul Iman.</p>
+          <p className="text-primary-foreground/80 text-lg max-w-2xl mx-auto">Kami senantiasa terbuka untuk melayani pertanyaan, masukan, dan kebutuhan informasi Anda terkait Zein Page.</p>
         </div>
       </div>
 
@@ -211,7 +211,7 @@ export function Kontak() {
                 className="w-full h-full border-0"
                 loading="lazy"
                 allowFullScreen
-                title="Peta Lokasi Musholla Nurul Iman"
+                title="Peta Lokasi Zein Page"
               />
             </div>
           </div>

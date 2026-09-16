@@ -731,7 +731,7 @@ export function Home() {
         />
         <div className="relative z-20 text-center px-4 max-w-4xl mx-auto space-y-6">
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white drop-shadow-lg">
-            {settings?.heroTitle || "Selamat Datang di Musholla Nurul Iman"}
+            {settings?.heroTitle || "Selamat Datang di Zein Page"}
           </h1>
           <p className="text-lg md:text-2xl text-white/90 font-medium drop-shadow-md">
             {settings?.heroSubtitle || "Simbol Kemerdekaan, Toleransi, dan Peradaban Islam"}
