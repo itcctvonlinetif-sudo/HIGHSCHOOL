@@ -1,6 +1,8 @@
-# 🕌 Panduan Migrasi Website ke Server Lokal Ubuntu
+# Zein Page — Panduan Instalasi Lokal & Self-Hosting Ubuntu/CentOS
 
-Panduan ini untuk pemula yang ingin menjalankan website Musholla/Masjid ini di komputer atau server Ubuntu sendiri menggunakan Git.
+Panduan ini menjelaskan cara menjalankan Zein Page di komputer atau server sendiri. Instruksi tersedia untuk Ubuntu/Debian dan CentOS Stream, Rocky Linux, atau AlmaLinux.
+
+Untuk deployment produksi dengan bundle siap upload, lihat juga [`SELF-HOSTING.md`](SELF-HOSTING.md).
 
 ---
 
@@ -17,12 +19,14 @@ Panduan ini untuk pemula yang ingin menjalankan website Musholla/Masjid ini di k
 9. [Akses Website dari Browser](#9-akses-website-dari-browser)
 10. [Update Website dari GitHub](#10-update-website-dari-github)
 11. [Troubleshooting](#11-troubleshooting)
+12. [Membuat dan Memasang Bundle Self-Hosting](#12-membuat-dan-memasang-bundle-self-hosting)
+13. [Catatan Node.js](#13-catatan-nodejs)
 
 ---
 
 ## 1. Persyaratan Sistem
 
-- **OS:** Ubuntu 22.04 LTS atau 24.04 LTS (direkomendasikan)
+- **OS:** Ubuntu 22.04/24.04 LTS, Debian 12, CentOS Stream 9, Rocky Linux 9, atau AlmaLinux 9
 - **RAM:** Minimal 1 GB (rekomendasi 2 GB)
 - **Storage:** Minimal 5 GB kosong
 - **Koneksi internet** untuk download package
@@ -87,7 +91,7 @@ npm install -g pnpm
 pnpm --version   # harus tampil 10.x.x
 ```
 
-### 2.5 Install PostgreSQL (Database)
+### 2.5 Install PostgreSQL (Database) — Ubuntu/Debian
 
 ```bash
 sudo apt install postgresql postgresql-contrib -y
@@ -101,6 +105,50 @@ sudo systemctl status postgresql
 ```
 
 Jika tampil `Active: active (running)` berarti berhasil. Tekan `Q` untuk keluar.
+
+### 2.6 Instalasi software di CentOS Stream/Rocky/AlmaLinux
+
+Gunakan bagian ini sebagai pengganti langkah 2.1–2.5 jika server menggunakan CentOS Stream 9, Rocky Linux 9, atau AlmaLinux 9.
+
+```bash
+# Update sistem dan pasang utilitas dasar
+sudo dnf update -y
+sudo dnf install -y curl git tar gzip gcc-c++ make
+
+# Instal Node.js 22 LTS dari NodeSource
+curl -fsSL https://rpm.nodesource.com/setup_22.x | sudo bash -
+sudo dnf install -y nodejs
+
+# Verifikasi Node.js dan npm
+node --version
+npm --version
+
+# Instal pnpm
+sudo npm install -g pnpm
+pnpm --version
+
+# Instal PostgreSQL
+sudo dnf install -y postgresql-server postgresql-contrib
+sudo postgresql-setup --initdb
+sudo systemctl enable --now postgresql
+
+# Verifikasi PostgreSQL
+sudo systemctl status postgresql
+```
+
+Jika `postgresql-setup --initdb` melaporkan database sudah ada, lanjutkan ke langkah berikutnya. Tekan `Q` untuk keluar dari status service.
+
+Untuk membuka port saat memakai Nginx, gunakan firewall berikut:
+
+```bash
+sudo dnf install -y nginx
+sudo systemctl enable --now nginx
+sudo firewall-cmd --permanent --add-service=http
+sudo firewall-cmd --permanent --add-service=https
+sudo firewall-cmd --reload
+```
+
+> **Catatan:** Untuk deployment produksi, port `8080` sebaiknya hanya diakses lokal oleh Nginx. Jangan membuka port API ke internet jika Nginx berada di server yang sama.
 
 ---
 
@@ -227,13 +275,13 @@ pnpm --filter @workspace/scripts run seed
 Jika berhasil, akan tampil:
 ```
 🌱 Memulai seed database...
-✅ Admin: username=admin | password=istiqlal2024
+✅ Admin: username=admin | password default sesuai seed
 ✅ Settings berhasil diisi
 ✅ Menu berhasil dibuat
 ... dst
 ```
 
-> 🔐 **Catat:** Username admin = `admin`, Password = `istiqlal2024` — **Segera ganti password** setelah pertama kali login!
+> 🔐 **Catat:** Username admin = `admin`. Gunakan password default yang tercetak saat seed, lalu **segera ganti password** setelah pertama kali login.
 
 ### 6.4 Build API Server
 
@@ -318,7 +366,7 @@ const dotenv = loadEnv();
 module.exports = {
   apps: [
     {
-      name: "masjid-api",
+       name: "zein-page-api",
       script: "./artifacts/api-server/dist/index.mjs",
       env: {
         PORT: 8080,
@@ -328,7 +376,7 @@ module.exports = {
       }
     },
     {
-      name: "masjid-web",
+       name: "zein-page-web-dev",
       script: "pnpm",
       args: "--filter @workspace/masjid-istiqlal run dev",
       env: {
@@ -557,7 +605,61 @@ pm2 restart all
 
 ---
 
-## 12. Catatan Node.js
+## 12. Membuat dan Memasang Bundle Self-Hosting
+
+Bundle dapat dibuat dari komputer pengembang atau Replit tanpa membawa `node_modules`, `.env`, cache, atau folder `.git`.
+
+### 12.1 Membuat bundle
+
+```bash
+# Dari root project
+bash scripts/create-self-hosting-bundle.sh
+```
+
+File akan dibuat di folder `release/` dengan nama seperti:
+
+```text
+zein-page-self-hosting-YYYYMMDD-HHMMSS.tar.gz
+zein-page-self-hosting-YYYYMMDD-HHMMSS.sha256
+```
+
+### 12.2 Memasang bundle di server
+
+Salin arsip ke server, lalu jalankan:
+
+```bash
+sudo mkdir -p /var/www/zein-page
+sudo tar -xzf zein-page-self-hosting-*.tar.gz -C /var/www/zein-page --strip-components=1
+cd /var/www/zein-page
+cp deploy/env.example .env
+nano .env
+pnpm install --frozen-lockfile
+pnpm --filter @workspace/db run push
+pnpm --filter @workspace/scripts run seed
+```
+
+Edit `deploy/pm2/ecosystem.config.cjs` jika nama proses atau port perlu diubah. Jalankan API dengan PM2:
+
+```bash
+sudo npm install -g pm2
+pm2 start deploy/pm2/ecosystem.config.cjs
+pm2 save
+pm2 startup
+```
+
+Konfigurasi Nginx tersedia di `deploy/nginx/zein-page.conf.example`. Salin ke konfigurasi site Nginx, ubah `server_name`, lalu aktifkan:
+
+```bash
+sudo cp deploy/nginx/zein-page.conf.example /etc/nginx/conf.d/zein-page.conf
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+Panduan lengkap, termasuk HTTPS dan update aplikasi, ada di [`SELF-HOSTING.md`](SELF-HOSTING.md).
+
+---
+
+## 13. Catatan Node.js
 
 Proyek ini dikembangkan di Replit menggunakan **Node.js 24**. Untuk server Ubuntu lokal, **Node.js 22 LTS** sudah cukup dan kompatibel penuh karena tidak ada fitur Node.js 24-spesifik yang digunakan.
 
@@ -571,4 +673,4 @@ nvm alias default 24
 
 ---
 
-*Panduan ini dibuat untuk Ubuntu 22.04/24.04 LTS dengan Node.js 22/24 dan PostgreSQL 14+.*
+*Panduan ini dibuat untuk Ubuntu/Debian dan CentOS Stream/Rocky/AlmaLinux dengan Node.js 22 LTS dan PostgreSQL 14+.*

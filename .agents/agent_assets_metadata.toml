@@ -6,3 +6,32 @@ id = "PE4sqbg0YKaWaRMU9OMZH"
 uri = "file://PANDUAN-LOKAL.md"
 type = "text"
 title = "Panduan Migrasi ke Server Lokal Ubuntu"
+logical_id = "31537792-3831-4496-9e86-28a7537ebd8e"
+
+[[outputs]]
+id = "0p4fGmQX6c_xey63U95JS"
+uri = "file://release/zein-page-self-hosting-20260917-054327.tar.gz"
+type = "unspecified"
+title = "Zein Page Self-Hosting Bundle"
+description = "Bundle siap dipasang di server Ubuntu/Debian atau CentOS/Rocky/AlmaLinux. Berisi source, frontend build, API build, konfigurasi Nginx/PM2, dan panduan deployment. Tidak berisi secret atau node_modules."
+logical_id = "6121be6e-634a-4e9e-b2b4-6d0b51f23969"
+content_hash = "sha256:157bf54ce3fb0482de6cdfa6bfb4967d6fa03557b78a926f04d7f79b4d15e8e9"
+size = 14760543
+mtime_ms = 1789623813332
+storage_uri = "gcs://replit-rams-assets-pike/rams/assets/repl:abe6c657-0606-4f55-8faa-cf85e63dc152/6121be6e-634a-4e9e-b2b4-6d0b51f23969/5b7624dc-a18e-43f4-aeeb-a2eb9f8d2105"
+storage_version_token = "1789623834676900"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "_ynh4ljzo4wcgM7S8BnKq"
+uri = "file://release/zein-page-self-hosting-20260917-054327.sha256"
+type = "unspecified"
+title = "Zein Page Bundle SHA-256"
+description = "Checksum untuk memverifikasi integritas arsip self-hosting."
+logical_id = "6dc7825a-5b00-43f0-8f58-f738f153ee8b"
+content_hash = "sha256:9a87ff8238f81de2d23b938544bb264ac830e08aa526034b2ee0c81e0f5043bd"
+size = 112
+mtime_ms = 1789623813384
+storage_uri = "gcs://replit-rams-assets-pike/rams/assets/repl:abe6c657-0606-4f55-8faa-cf85e63dc152/6dc7825a-5b00-43f0-8f58-f738f153ee8b/bf06186a-f367-419b-b745-f6bd68b37d20"
+storage_version_token = "1789623836187581"
+content_type = "application/octet-stream"
